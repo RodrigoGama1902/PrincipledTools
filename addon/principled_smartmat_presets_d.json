@@ -1,0 +1,29 @@
+{
+    "Smart Presets": {
+        "Metal ": {
+            "preset": "Metal",
+            "active": true,
+            "select_node_setup": "NONE",
+            "use_name_detect": true,
+            "name_detect_operation": "and",
+            "keys": "Metal, Metallic",
+            "use_rgb_detect": false,
+            "rgb_operation": "and",
+            "detect_r": false,
+            "r_value": 0.0,
+            "r_operation": "==",
+            "detect_g": false,
+            "g_value": 0.0,
+            "g_operation": "==",
+            "detect_b": false,
+            "b_value": 0.0,
+            "b_operation": "==",
+            "detect_a": false,
+            "a_value": 0.0,
+            "a_operation": "==",
+            "use_prop_detect": false,
+            "prop_detect_operation": "and",
+            "prop_data_detect": {}
+        }
+    }
+}

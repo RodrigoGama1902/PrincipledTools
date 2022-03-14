@@ -1,0 +1,29 @@
+{
+    "Presets": {
+        "Fabric": {
+            "Sheen": 1.0,
+            "Roughness": 0.4000000059604645
+        },
+        "Plastic": {
+            "Roughness": 0.0,
+            "IOR": 1.4600000381469727
+        },
+        "Water": {
+            "Roughness": 0.0,
+            "Transmission": 1.0,
+            "IOR": 1.3250000476837158
+        },
+        "Metal": {
+            "Metallic": 1.0,
+            "Roughness": 0.0
+        },
+        "Vegetation": {
+            "Specular": 0.5899999737739563,
+            "Roughness": 0.10999999940395355
+        },
+        "Glass": {
+            "Roughness": 0.0,
+            "Transmission": 1.0
+        }
+    }
+}
