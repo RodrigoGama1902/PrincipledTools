@@ -81,8 +81,8 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
                                 else:
                                     input.default_value = p.prop_value
                                 
-# Create HSV and MIX node on input base color when necessary
-def base_color_helper(node_tree, input,value,principled, mix_fac = 0.5, mute_mix = False):
+# Create Help Color Group on input base color when necessary
+def base_color_helper(node_tree, input,value,principled):
     
     props = bpy.context.scene.principledtools
 
@@ -92,15 +92,12 @@ def base_color_helper(node_tree, input,value,principled, mix_fac = 0.5, mute_mix
         'Base Color': (default_x_offset, principled.location[1] - 105),     
     }
     
-    hue_node = None
-    mix_node = None
     mix_group = None
     
     if input.links: 
-    
         if not input.links[0].from_node.name.startswith(mix_color_group):
             
-            new_mix_group = create_mixing_color_group(principled,mix_fac = 0.5, mute_mix = mute_mix)
+            new_mix_group = create_mixing_color_group()
             
             mix_group = node_tree.nodes.new('ShaderNodeGroup')
             mix_group.node_tree = bpy.data.node_groups[new_mix_group.name]
@@ -115,16 +112,13 @@ def base_color_helper(node_tree, input,value,principled, mix_fac = 0.5, mute_mix
              
         else:
             mix_group = input.links[0].from_node
+                       
+        props.use_b_use_color_mix = True     
         
-        if value:
-               
-            props.use_b_use_color_mix = True     
-            
-            mix_node = [n for n in mix_group.node_tree.nodes if n.type == 'MIX_RGB']
-            if mix_node:
-                mix_node = mix_node[0]            
-                mix_node.mute = False  
-                mix_node.inputs[2].default_value = value 
+        mix_node = [n for n in mix_group.node_tree.nodes if n.type == 'MIX_RGB']
+        if mix_node:
+            mix_node = mix_node[0]            
+            mix_node.inputs[2].default_value = value 
 
     else:
         if value:
@@ -381,12 +375,12 @@ def update_color_settings(self, context, origin=""):
         if self.block_auto_update:
             return
 
-    objs = bpy.context.selected_objects
-    props = bpy.context.scene.principledtools
+    objs = context.selected_objects
+    props = context.scene.principledtools
     
-    #props.p_base_color = getattr(props,'p_base_color') # This will just trigger the color update funtion, to create HSV and MIX nodes
-
-    nodes = []
+    # Checking for color helper nodes
+    
+    nodes_groups_helpers = []
     principled_nodes = []
 
     if props.enum_materials == '0':
@@ -398,25 +392,27 @@ def update_color_settings(self, context, origin=""):
                         active_use_nodes(mat)
 
                     for nod in mat.node_tree.nodes:
-                        if nod.type == 'HUE_SAT' or nod.type == 'MIX_RGB':
+                        if nod.type == 'GROUP':
                             if nod.name.endswith(node_identifier):                   
-                                nodes.append(nod)
+                                nodes_groups_helpers.append(nod)
                         if nod.type == 'BSDF_PRINCIPLED':
                                 principled_nodes.append(nod)
 
     
     if props.enum_materials == '1':
         
-        if bpy.context.active_object:
-            mat = bpy.context.active_object.active_material
+        if context.active_object:
+            mat = context.active_object.active_material
             if mat:
                 if not mat.use_nodes:
                     active_use_nodes(mat)
 
-                for nod in bpy.context.active_object.active_material.node_tree.nodes:
-                    if nod.type == 'HUE_SAT' or nod.type == 'MIX_RGB':
+                for nod in context.active_object.active_material.node_tree.nodes:
+                    if nod.type == 'GROUP':
                         if nod.name.endswith(node_identifier):                   
-                            nodes.append(nod)
+                            nodes_groups_helpers.append(nod)
+                    if nod.type == 'BSDF_PRINCIPLED':
+                        principled_nodes.append(nod)
 
     if origin == 'HUE':
         props.use_b_hue = True
@@ -440,88 +436,99 @@ def update_color_settings(self, context, origin=""):
         
     # Only when using HSV 
          
-    # It will create HSV and MIX node when inputs like HUE, SATURATION, VALUE where trigged but none of this nodes was created
+    # It will create a color group node in each principled node when inputs like HUE, SATURATION, VALUE where trigged but none of this nodes was created
        
-    if True in (props.use_b_hue, props.use_b_saturation, props.use_b_value, props.use_base_color,props.use_b_contrast, props.use_b_bright, props.use_b_gamma):
-        if props.auto_update or origin == 'All':
-            if not nodes:
-                for i in principled_nodes:
-                                        
-                    if props.use_base_color:
-                        mix_group = base_color_helper(i.id_data, i.inputs[0],props.p_base_color,i, mute_mix = False)
-                    else:
-                        mix_group = base_color_helper(i.id_data, i.inputs[0],None,i, mute_mix = True)                    
-                                
-                    nodes.append(mix_group)
-              
-    for node in nodes:
+    if not True in (props.use_b_hue,
+                props.use_b_saturation,
+                props.use_b_value,
+                props.use_base_color,
+                props.use_b_contrast,
+                props.use_b_bright,
+                props.use_b_gamma):
+        return
+        
+    if props.auto_update or origin == 'All':
+        if not nodes_groups_helpers:
+            
+            # Create color helper group node
+            for p_node in principled_nodes:
+                
+                mix_group = base_color_helper(p_node.id_data, p_node.inputs[0],props.p_base_color,p_node)
+                                    
+                if not props.use_base_color:
+                    # Mute mix node when there is no base color update
+                    for node in mix_group.node_tree.nodes:
+                        if node.type == 'MIX_RGB':
+                            node.mute = True        
+                            
+                nodes_groups_helpers.append(mix_group)
+            
+    for node in nodes_groups_helpers:
         
         if not node:
             continue
             
-        if node.type == 'GROUP':
-            for n in node.node_tree.nodes:      
-                if n.type == 'MIX_RGB':
-                    
-                    # Update if 
-                    if origin == 'USE MIX' and props.auto_update or origin == 'All':
-                        if props.use_b_use_color_mix:
-                            if not props.b_use_color_mix:
-                                n.inputs[0].default_value = 0
-                            else:                     
-                                n.inputs[0].default_value = props.b_color_mix_fac
-        
-                    if props.b_use_color_mix:
-                        if origin == 'MIX FAC' and props.auto_update or origin == 'All':
-                            if props.use_b_color_mix_fac:
-                                n.inputs[0].default_value = props.b_color_mix_fac
-                    
-                    # Only when auto update is off
-                    
-                    # The base color updates only the main operator is confirmed, while the other props of the mixing color operation
-                    # are update when the mixing color operator is confirmed
-                    # that's why was necessary to manually set the base color when the mixing color operation is confirmed
-                    if origin == 'All':
-                        if props.use_base_color:
-                            n.inputs[2].default_value = props.p_base_color
+        for n in node.node_tree.nodes:      
+            if n.type == 'MIX_RGB':
 
-                    continue
-
-                if n.type == 'HUE_SAT':
-
-                    if origin == 'HUE' and props.auto_update or origin == 'All':
-                        if props.use_b_hue:
-                            n.inputs[0].default_value = props.b_hue
-                    
-                    if origin == 'SATURATION' and props.auto_update  or origin == 'All':
-                        if props.use_b_saturation:
-                            n.inputs[1].default_value = props.b_saturation
-                        
-                    if origin == 'VALUE' and props.auto_update  or origin == 'All':
-                        if props.use_b_value:
-                            n.inputs[2].default_value = props.b_value   
-                    
-                    continue 
-                    
-                if n.type == 'BRIGHTCONTRAST':
-
-                    if origin == 'BRIGHT' and props.auto_update or origin == 'All':
-                        if props.use_b_bright:
-                            n.inputs[1].default_value = props.b_bright
-                    
-                    if origin == 'CONTRAST' and props.auto_update  or origin == 'All':
-                        if props.use_b_contrast:
-                            n.inputs[2].default_value = props.b_contrast
-                                            
-                    continue
+                if origin == 'USE MIX' and props.auto_update or origin == 'All':
+                    if props.use_b_use_color_mix:
+                        if not props.b_use_color_mix:
+                            n.inputs[0].default_value = 0
+                        else:                     
+                            n.inputs[0].default_value = props.b_color_mix_fac
+    
+                if props.b_use_color_mix:
+                    if origin == 'MIX FAC' and props.auto_update or origin == 'All':
+                        if props.use_b_color_mix_fac:
+                            n.inputs[0].default_value = props.b_color_mix_fac
                 
-                if n.type == 'GAMMA':
+                # Only when auto update is off
+                
+                # The base color updates only the main operator is confirmed, while the other props of the mixing color operation
+                # are update when the mixing color operator is confirmed
+                # that's why was necessary to manually set the base color when the mixing color operation is confirmed
+                if origin == 'All':
+                    if props.use_base_color:
+                        n.inputs[2].default_value = props.p_base_color
 
-                    if origin == 'GAMMA' and props.auto_update or origin == 'All':
-                        if props.use_b_gamma:
-                            n.inputs[1].default_value = props.b_gamma
-                                                                
-                    continue 
+                continue
+
+            if n.type == 'HUE_SAT':
+
+                if origin == 'HUE' and props.auto_update or origin == 'All':
+                    if props.use_b_hue:
+                        n.inputs[0].default_value = props.b_hue
+                
+                if origin == 'SATURATION' and props.auto_update  or origin == 'All':
+                    if props.use_b_saturation:
+                        n.inputs[1].default_value = props.b_saturation
+                    
+                if origin == 'VALUE' and props.auto_update  or origin == 'All':
+                    if props.use_b_value:
+                        n.inputs[2].default_value = props.b_value   
+                
+                continue 
+                
+            if n.type == 'BRIGHTCONTRAST':
+
+                if origin == 'BRIGHT' and props.auto_update or origin == 'All':
+                    if props.use_b_bright:
+                        n.inputs[1].default_value = props.b_bright
+                
+                if origin == 'CONTRAST' and props.auto_update  or origin == 'All':
+                    if props.use_b_contrast:
+                        n.inputs[2].default_value = props.b_contrast
+                                        
+                continue
+            
+            if n.type == 'GAMMA':
+
+                if origin == 'GAMMA' and props.auto_update or origin == 'All':
+                    if props.use_b_gamma:
+                        n.inputs[1].default_value = props.b_gamma
+                                                            
+                continue 
 
 # -------------------------------------------------------------
 # Extra Function Updates

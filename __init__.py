@@ -5,7 +5,7 @@ bl_info = {
     "description": "Quick Ajusts for Principled Shader",
     "author": "Rodrigo Gama",
     "version": (1, 0),
-    "blender": (2, 93, 0),
+    "blender": (3, 1, 0),
     "location": "View3D",
     "category": "3D View"
 }

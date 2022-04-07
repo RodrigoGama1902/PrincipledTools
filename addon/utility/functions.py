@@ -198,7 +198,7 @@ def get_all_nodes(node_tree):
     
     return nodes
     
-def create_mixing_color_group(principled, mix_fac = 0.5, mute_mix = False):
+def create_mixing_color_group():
     
     #bpy.context.scene.use_nodes = True
     
@@ -216,9 +216,8 @@ def create_mixing_color_group(principled, mix_fac = 0.5, mute_mix = False):
     mix_node = group_tree.nodes.new(type='ShaderNodeMixRGB')
     mix_node.name = mix_node_name
     mix_node.hide = True
-    mix_node.inputs[0].default_value = mix_fac
-    mix_node.mute = mute_mix
-
+    mix_node.inputs[0].default_value = 0.5
+ 
     # Hue Node
 
     hue_node = group_tree.nodes.new(type='ShaderNodeHueSaturation')
