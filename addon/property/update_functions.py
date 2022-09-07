@@ -10,7 +10,7 @@ from ..utility.functions import (
                                  set_principled_default,
                                  reset_principled_node,
                                  reset_principled_node_preset,
-                                 get_context_materials)    
+                                 )    
 
 def activate_selected_preset(self, context, preset_name, principled = None, load_mode = 'UPDATE_PROP'):
         
@@ -41,7 +41,7 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
                     setattr(props,prop_use,True)
 
                     if props.auto_update:
-                        update_props(self,context,'All')
+                        update_main_props(self,context,'All')
                 
                 if load_mode == 'DIRECT':                        
                     if principled:
@@ -56,7 +56,7 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
   
                                 
 def base_color_helper(context, node_tree, input,value,principled):
-    '''Returns the base color helper group, creates one if necessary'''
+    '''Returns and updates the base color helper group in this node_tree, creates one if necessary'''
     
     default_x_offset = principled.location[0] -150
 
@@ -125,7 +125,11 @@ def base_color_helper(context, node_tree, input,value,principled):
 
 
 def math_node_helper(node_tree, input,value,principled):
-        
+    '''Update the math node in the current principled input, creates one if necessary'''
+    
+    '''The math node helper is used when the user wants to change the value of a principled input that already has some node connected to it,
+    in this case, a math node will be added to multiply the input value of the linked node'''
+    
     def constant_y_position(y_index, base_y = 189):
         '''Generate correct y position using y-index from node input'''
         
@@ -178,6 +182,7 @@ def math_node_helper(node_tree, input,value,principled):
     else:
                 
         input.default_value = value
+
 
 # -------------------------------------------------------------
 # Update Props Settings
@@ -324,7 +329,7 @@ def update_single_principled_prop(self, context, input, origin, node_tree, princ
     if i.name == origin: # if True, means that this property is changing real time, so the prop bool should be set to True
         setattr(props,'use_' + prop_name, True)
         
-    if props.auto_update or origin == 'All': # If True, means that the update_props function is running through operator or through auto update                
+    if props.auto_update or origin == 'All': # If True, means that the update_main_props function is running through operator or through auto update                
         if prop_bool:  
             if prop_name == 'base_color':   # Base color update is different than simple props updates that will use math node helpers                 
                 base_color_helper(context, node_tree, i, prop,n)
@@ -332,16 +337,19 @@ def update_single_principled_prop(self, context, input, origin, node_tree, princ
                 math_node_helper(node_tree, i, prop,n)
         
   
-def update_props(self,context,origin):
-    '''Main Update Props Function'''
+def update_main_props(self,context,origin):
+    '''Main Update Props Function
+    
+    ->The origin defines which property trigged this function 
+    ->The origin can be any of the principled props, such as Base Color, Roughness, etc
+    ->The origin can also be 'all', that will be used when the 'auto update' is not being used, 
+    and the operator is trigged, telling the function to update all props'''
     
     if hasattr(self,'block_auto_update'):
         if self.block_auto_update:
             return
     
-    nodes = get_principled_nodes(create_materials = True)
-    
-    for n in nodes:
+    for n in get_principled_nodes(create_materials = True):
         node_tree = n.id_data 
 
         for i in n.inputs:            
@@ -349,19 +357,17 @@ def update_props(self,context,origin):
 
                 simple_update = ['Base Color','Subsurface','Subsurface IOR','Subsurface Anisotropy','Metallic','Specular','Specular Tint','Roughness','Anisotropic','Anisotropic Rotation','Sheen','Sheen Tint','Clearcoat','Clearcoat Roughness','IOR','Transmission','Transmission Roughness','Emission Strength','Alpha']
 
-                if i.name in simple_update:
-                                  
+                if i.name in simple_update:                 
                     update_single_principled_prop(self, context, i, origin, node_tree, n, i.name.lower())
                 
                 if i.name == 'Normal':
-
                     update_normal_principled_input(self, i, origin, node_tree, n)
                     
 # -------------------------------------------------------------
 # Base Color Settings
 # -------------------------------------------------------------
 
-def update_color_settings(self, context, origin=""):
+def update_color_props(self, context, origin):
     '''Handles the color property updates, such as color_mix, hue, saturation, value, etc'''
     
     if hasattr(self,'block_auto_update'):

@@ -2,7 +2,7 @@ import bpy
 import os
 import json
 
-from ..property.addon_props import update_props, update_color_settings
+from ..property.addon_props import update_main_props, update_color_props
 from ..utility.constants import *
 from ..utility.functions import (
                                 set_principled_default,
@@ -196,7 +196,7 @@ class PT_MainPrincipledTool(bpy.types.Operator): # change material props from mp
 
     def execute(self, context):
 
-        update_props(self,context,'All')
+        update_main_props(self,context,'All')
 
         return {'FINISHED'}
 
@@ -282,7 +282,7 @@ class PT_OP_BaseColorSettings(bpy.types.Operator):
 
     def execute(self, context):
 
-        update_color_settings(self, context, 'All')
+        update_color_props(self, context, 'All')
 
         return {'FINISHED'}
 

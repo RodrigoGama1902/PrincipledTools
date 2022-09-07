@@ -14,12 +14,12 @@ from .enum_functions import *
 def update_principled_props_closure(prop):
     '''closure to get property that trigged the main update function'''
         
-    return lambda a,b: update_props(a,b,prop)
+    return lambda a,b: update_main_props(a,b,prop)
 
 def update_base_color_settings_closure(prop):
     '''closure to get property that trigged the main update function'''
     
-    return lambda a,b: update_color_settings(a,b,prop)
+    return lambda a,b: update_color_props(a,b,prop)
 
 class PT_PresetPropData(PropertyGroup):
     '''Collection of "PT_PresetsCollection.preset_prop_data" that holds each prop of a preset'''

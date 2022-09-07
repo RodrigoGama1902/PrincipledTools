@@ -2,7 +2,7 @@ import bpy
 import os
 import json
 
-from ..property.addon_props import activate_selected_preset, update_props
+from ..property.addon_props import activate_selected_preset, update_main_props
 from ..utility.constants import *
 from ..utility.functions import (json_check,
                                 generate_preset_data,
@@ -117,7 +117,7 @@ class PT_ActivateLastPreset(bpy.types.Operator):
         
         if preset_name:
             activate_selected_preset(self, context, preset_name)
-            update_props(self,context,'All')
+            update_main_props(self,context,'All')
             
         else:           
             self.report({'WARNING'},"No preset has been used yet")
