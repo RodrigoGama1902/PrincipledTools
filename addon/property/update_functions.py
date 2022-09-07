@@ -9,27 +9,10 @@ from ..utility.functions import (active_use_nodes,
                                  create_mixing_color_group,
                                  set_principled_default,
                                  reset_principled_node,
-                                 reset_principled_node_preset)
-
-def update_preset_enum_prop(self,context):
-    '''Update enum prop (presets)'''
-    
-    Enum_items = [("NONE","None",""),]
-    
-    for preset in bpy.context.scene.principledtools.loaded_presets:
-        
-        data = preset.preset_name
-        item = (data, data, data)
-        
-        Enum_items.append(item)
-        
-    return Enum_items
-    
+                                 reset_principled_node_preset)    
 
 def activate_selected_preset(self, context, preset_name, principled = None, load_mode = 'UPDATE_PROP'):
         
-    empty_favorites = False
-    
     set_principled_default()
     reset_principled_node_preset()
     
@@ -69,9 +52,10 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
                                     input.default_value = p.prop_value_vector3               
                                 else:
                                     input.default_value = p.prop_value
+  
                                 
-# Create Help Color Group on input base color when necessary
 def base_color_helper(node_tree, input,value,principled):
+    '''Create Help Color Group on input base color when necessary'''
     
     props = bpy.context.scene.principledtools
 
@@ -118,11 +102,12 @@ def base_color_helper(node_tree, input,value,principled):
             
     return mix_group
 
-# Creates Math and Clamp nodes when current input has any node connected in
+
 def math_node_helper(node_tree, input,value,principled):
+    '''Creates Math and Clamp nodes when current input has any node connected in'''
     
-    # Generate correct y position using y-index from node input
     def constant_y_position(y_index, base_y = 189):
+        '''Generate correct y position using y-index from node input'''
         
         y = base_y + (22.1 * y_index)
         
@@ -178,20 +163,22 @@ def math_node_helper(node_tree, input,value,principled):
 # Update Principled Props Real Time
 # -------------------------------------------------------------
 
-# closure to get property that trigged the main update function
 def update_principled_props_closure(prop):
+    '''closure to get property that trigged the main update function'''
         
     return lambda a,b: update_props(a,b,prop)
 
-# Update normal input prop (Only used when principled prop name is 'Normal')
+
 def update_normal_principled_input(self, input, origin, node_tree, principled):
+    '''Update normal input prop (Only used when principled prop name is 'Normal')'''
 
-    # Function used to find and modify bump or normal map node
-    def update_found_normal_node(from_node, from_socket):
-        # This is function is recursion ready, meaning the sometimes will get group node and normal/bump nodes
+    def update_found_normal_node(from_node, from_socket):   
+        '''Function used to find and modify bump or normal map node
+        
+        This is function is recursion ready, meaning the sometimes will get group node and normal/bump nodes
 
-        # If the node is bump/normal, this function will skip the process of find normal/bump nodes inside group
-        # if the node is group type, will run this task below to find bump/normal nodes
+        If the node is bump/normal, this function will skip the process of find normal/bump nodes inside group
+        if the node is group type, will run this task below to find bump/normal nodes'''
 
         if from_node.type == 'GROUP':
 
@@ -305,8 +292,9 @@ def update_normal_principled_input(self, input, origin, node_tree, principled):
             # this function will get node and socket connected to principled normal input
             update_found_normal_node(from_node, from_socket)
 
-# This function will automatically update each principled prop by it input name
+
 def update_single_principled_prop(self, input, origin, node_tree, principled, prop_name):
+    '''This function will automatically update each principled prop by it input name'''
 
     i = input
     n = principled 
@@ -328,8 +316,9 @@ def update_single_principled_prop(self, input, origin, node_tree, principled, pr
             else:
                 math_node_helper(node_tree, i, prop,n)
         
-# Main Update Props Function       
+  
 def update_props(self,context,origin):
+    '''Main Update Props Function'''
     
     if hasattr(self,'block_auto_update'):
         if self.block_auto_update:
@@ -357,8 +346,10 @@ def update_props(self,context,origin):
 # Base Color Settings
 # -------------------------------------------------------------
 
-# closure to get property that trigged the main update function
+
 def update_base_color_settings_closure(prop):
+    '''closure to get property that trigged the main update function'''
+    
     return lambda a,b: update_color_settings(a,b,prop)
 
 def update_color_settings(self, context, origin=""):
@@ -529,8 +520,8 @@ def update_color_settings(self, context, origin=""):
 # Extra Function Updates
 # -------------------------------------------------------------
 
-# Update principled nodes count  
 def update_enum_materials_node_count(self,context):
+    '''Update principled nodes count'''
     self.principled_nodes_found = len(get_principled_nodes())
     self.show_base_color_extras = check_if_linked_base_color()
  

@@ -7,17 +7,20 @@ from bpy.types import PropertyGroup
 
 from ..utility.constants import *
 from ..utility.functions import write_smart_mat_json
-from .update_functions import *
 
-# Collection of "PT_PresetsCollection.preset_prop_data" that holds each prop of a preset
+from .update_functions import *
+from .enum_functions import *
+
 class PT_PresetPropData(PropertyGroup):
+    '''Collection of "PT_PresetsCollection.preset_prop_data" that holds each prop of a preset'''
     
     prop_name : bpy.props.StringProperty() 
     prop_value : bpy.props.FloatProperty()
     prop_value_vector3 : bpy.props.FloatVectorProperty(name='Base Color', size=4, subtype='COLOR', min=0, max=1,default=[1,1,1,1])
 
-# Collection of "PT_Addon_Props.loaded_presets" that holds all presets
+
 class PT_PresetsCollection(PropertyGroup):
+    '''Collection of "PT_Addon_Props.loaded_presets" that holds all presets'''
     
     preset_name : bpy.props.StringProperty()  
     preset_prop_data : bpy.props.CollectionProperty(type=PT_PresetPropData)
@@ -38,16 +41,17 @@ class PT_SMSPropData(PropertyGroup):
     )
       
 class PT_SmartMaterialSetupPresets(PropertyGroup):
-    # Class that holds all smart setups properties
-    #
-    # To add a new property, this new property should be:
-    # - Registed in this class
-    # - Added to write smart preset JSON Function "write_smart_mat_json"
-    # - Added to load smart preset JSON Function "generate_smart_preset_data"
-    # 
-    # The name of the key in JSON and the name of the property in this class should be the same
+    '''
+    Class that holds all smart setups properties
     
-    #toggle_edit : bpy.props.BoolProperty(name="Toggle Edit")
+    To add a new property, this new property should be:
+    - Registered in this class
+    - Added to write smart preset JSON Function "write_smart_mat_json"
+    - Added to load smart preset JSON Function "generate_smart_preset_data"
+     
+    The name of the key in JSON and the name of the property in this class should be the same
+    
+    #toggle_edit : bpy.props.BoolProperty(name="Toggle Edit")'''
     
     active_preset: bpy.props.BoolProperty(default = True, name="Active Preset", update = write_smart_mat_json)    
     smart_preset_name : bpy.props.StringProperty(name="Smart Preset Name", update = write_smart_mat_json)
@@ -169,13 +173,15 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
         ]        
     )
     
-# Collection of "PT_Addon_Props.sms_ignore_materials" that holds all materials that were already changed in SMS
+
 class PT_SmartMaterialSetupsIgnoreMaterials(PropertyGroup):
+    '''Collection of "PT_Addon_Props.sms_ignore_materials" that holds all materials that were already changed in SMS'''
     
     material_data : bpy.props.PointerProperty(type= bpy.types.Material)
             
-# Class that holds all properties of the add-on  
+
 class PT_Addon_Props(PropertyGroup):
+    '''Class that holds all properties of the add-on '''
     
     auto_update : bpy.props.BoolProperty(default=True, name ='Auto Update')
     block_auto_update : bpy.props.BoolProperty(default=False, name ='Block Auto Update')
