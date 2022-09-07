@@ -1,7 +1,7 @@
 import bpy
 
 bl_info = {
-    "name": "Principled Tool",
+    "name": "Principled Tools",
     "description": "Quick Ajusts for Principled Shader",
     "author": "Rodrigo Gama",
     "version": (0, 5, 0),

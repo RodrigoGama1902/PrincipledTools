@@ -1,11 +1,19 @@
 import bpy
 
 from .addon_props import PT_Addon_Props
-from .collection_props import PT_SmartMaterialSetupPresets, PT_PresetsCollection, PT_PresetPropData, PT_SMSPropData, PT_SmartMaterialSetupsIgnoreMaterials
-from .addon_preferences import PT_AddonPrefs
+from .collection_props import (PT_SmartMaterialSetupPresets, 
+                               PT_PresetsCollection, 
+                               PT_PresetPropData,
+                               PT_SMSPropData, 
+                               PT_SmartMaterialSetupsIgnoreMaterials)
 
 classes = (
-    PT_SmartMaterialSetupsIgnoreMaterials, PT_SMSPropData, PT_PresetPropData, PT_PresetsCollection, PT_SmartMaterialSetupPresets, PT_Addon_Props, PT_AddonPrefs
+    PT_SmartMaterialSetupsIgnoreMaterials, 
+    PT_SMSPropData,
+    PT_PresetPropData, 
+    PT_PresetsCollection, 
+    PT_SmartMaterialSetupPresets, 
+    PT_Addon_Props,
 )
 
 def register_addon_properties():
