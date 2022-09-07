@@ -4,14 +4,11 @@ import os
 
 ADDON_NAME = __name__.partition('.')[0]
 
-COMMAND_FILE_NAME = 'principled_presets.json'
-FAVORITES_PATH = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), COMMAND_FILE_NAME)
+PRINCIPLED_PRESETS_FILENAME = 'principled_presets.json'
+PRINCIPLED_PRESETS_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'data', PRINCIPLED_PRESETS_FILENAME))
 
-SMART_MATERIAL_PRESETS_FILENAME = 'principled_smartmat_presets.json'
-SMART_MATERIAL_PRESETS_PATH = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), SMART_MATERIAL_PRESETS_FILENAME)
-
-SMART_MATERIAL_PRESETS_TEST_FILENAME = 'principled_smart_mat_presets_test.json'
-SMART_MATERIAL_PRESETS_TEST_PATH = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), SMART_MATERIAL_PRESETS_TEST_FILENAME)
+SMART_MATERIAL_PRESETS_FILENAME = 'principled_smart_mat_presets.json'
+SMART_MATERIAL_PRESETS_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'data', SMART_MATERIAL_PRESETS_FILENAME))
 
 ADDON_NODE_IDENTIFIER = '_PRINCIPLEDTOOLSNODE'
 

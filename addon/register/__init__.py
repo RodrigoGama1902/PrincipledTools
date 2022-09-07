@@ -11,7 +11,7 @@ def register_addon():
     from ..addon_preferences import register_addon_preferences
     register_addon_preferences()
 
-    from ..property import register_addon_properties
+    from ..addon_properties import register_addon_properties
     register_addon_properties()
 
 
@@ -23,7 +23,7 @@ def unregister_addon():
     from ..addon_preferences import unregister_addon_preferences
     unregister_addon_preferences()
 
-    from ..property import unregister_addon_properties
+    from ..addon_properties import unregister_addon_properties
     unregister_addon_properties()
 
     from .keymap import unregister_keymap

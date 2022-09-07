@@ -1,8 +1,6 @@
 import bpy
-import os
-import json
 
-from ..property.addon_props import update_main_props, update_color_props
+from ..addon_properties.addon_props import update_main_props, update_color_props
 from ..utility.constants import *
 from ..utility.functions import (
                                 set_principled_default,

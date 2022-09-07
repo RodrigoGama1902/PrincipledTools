@@ -21,7 +21,7 @@ def convert_ab_path(filepath : str) -> str:
 def json_check(json_path: str) -> bool:
     '''Simple check if the json file is valid'''
 
-    try:
+    try:        
         with open(json_path) as json_file:
             json.load(json_file)
     except ValueError as e:
@@ -385,10 +385,13 @@ def generate_preset_data(context) -> None:
         
     props = context.scene.principledtools
     
-    if not os.path.exists(FAVORITES_PATH) and json_check(FAVORITES_PATH): 
+    if not os.path.exists(PRINCIPLED_PRESETS_PATH): 
+        return None
+
+    if not json_check(PRINCIPLED_PRESETS_PATH):
         return None
         
-    with open(FAVORITES_PATH, encoding='utf8') as json_file:
+    with open(PRINCIPLED_PRESETS_PATH, encoding='utf8') as json_file:
         
         data = json.load(json_file)  
         if not data["Presets"]:
@@ -432,7 +435,7 @@ def write_preset_json(context) -> None:
               
         data["Presets"][i.preset_name] = prop_data
                     
-    with open(FAVORITES_PATH, 'w', encoding='utf-8') as f:
+    with open(PRINCIPLED_PRESETS_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 

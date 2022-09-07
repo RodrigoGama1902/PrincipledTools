@@ -2,7 +2,7 @@ import bpy
 import os
 import json
 
-from ..property.addon_props import activate_selected_preset, update_main_props
+from ..addon_properties.addon_props import activate_selected_preset, update_main_props
 from ..utility.constants import *
 from ..utility.functions import (json_check,
                                 generate_preset_data,

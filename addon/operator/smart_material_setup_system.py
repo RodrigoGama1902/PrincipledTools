@@ -2,8 +2,8 @@ import bpy
 import os
 import json
 
-from ..property.addon_props import activate_selected_preset, get_presets_enum_items
-from ..property.update_functions import write_update_smart_mat_json
+from ..addon_properties.addon_props import activate_selected_preset, get_presets_enum_items
+from ..addon_properties.update_functions import write_update_smart_mat_json
 
 from .node_operators import create_quick_bump, create_quick_translucent
 from ..utility.constants import *
