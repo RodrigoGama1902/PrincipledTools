@@ -38,6 +38,7 @@ def create_quick_bump(principled_node):
         link(bump_node.inputs['Height'],color_ramp.outputs[0])
         link(principled_node.inputs['Normal'],bump_node.outputs[0])
 
+
 def create_quick_translucent(principled_node):
     
     def create_nodes(node_tree,principled,out_put):
@@ -107,10 +108,8 @@ def create_quick_translucent(principled_node):
                         link(mix_shader_2.inputs[0],text_node.outputs[1])
                                                                                 
                         default_links(link,mix_shader,mix_shader_2,translucent_shader,transparent_shader,out_put,principled)
+ 
     
-    
-    
-
 class PT_OP_QuickBump(bpy.types.Operator): # change material props from mp 
     """Add Quick Bump to selected material"""
 
