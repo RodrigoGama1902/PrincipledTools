@@ -3,13 +3,14 @@ import bpy
 from .update_functions import *
 from ..utility.constants import *
 from ..utility.constants import *
-from ..utility.functions import (active_use_nodes,
+from ..utility.functions import (
                                  get_principled_nodes,
                                  check_if_linked_base_color,
                                  create_mixing_color_group,
                                  set_principled_default,
                                  reset_principled_node,
-                                 reset_principled_node_preset)    
+                                 reset_principled_node_preset,
+                                 get_context_materials)    
 
 def activate_selected_preset(self, context, preset_name, principled = None, load_mode = 'UPDATE_PROP'):
         
@@ -55,6 +56,7 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
   
                                 
 def base_color_helper(context, node_tree, input,value,principled):
+    '''Returns the base color helper group, creates one if necessary'''
     
     default_x_offset = principled.location[0] -150
 
@@ -360,6 +362,7 @@ def update_props(self,context,origin):
 # -------------------------------------------------------------
 
 def update_color_settings(self, context, origin=""):
+    '''Handles the color property updates, such as color_mix, hue, saturation, value, etc'''
     
     if hasattr(self,'block_auto_update'):
         if self.block_auto_update:
@@ -415,7 +418,8 @@ def update_color_settings(self, context, origin=""):
             continue
                     
         for n in node.node_tree.nodes:      
-            if n.type == 'MIX_RGB':                            
+            if n.type == 'MIX_RGB':    
+                   
                 if origin == 'Color Mix Fac' and (props.auto_update or origin == 'All'):
                     n.inputs[0].default_value = props.b_color_mix_fac
             

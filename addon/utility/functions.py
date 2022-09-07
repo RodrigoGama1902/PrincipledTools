@@ -224,7 +224,7 @@ def create_mixing_color_group():
     mix_node = group_tree.nodes.new(type='ShaderNodeMixRGB')
     mix_node.name = mix_node_name
     mix_node.hide = True
-    mix_node.inputs[0].default_value = 0
+    mix_node.inputs[0].default_value = 0.5
  
     # Hue Node
 
