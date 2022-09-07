@@ -10,7 +10,7 @@ from ..utility.functions import (
                                 set_base_color_default,
                                 get_prefs,
                                 check_if_linked_base_color,
-                                get_principled_nodes,
+                                get_context_principled_nodes,
                                 get_all_nodes,
                                 generate_preset_data
                                 )
@@ -204,11 +204,11 @@ class PT_MainPrincipledTool(bpy.types.Operator): # change material props from mp
                 
         props = bpy.context.scene.principledtools
         
-        props.show_base_color_extras = check_if_linked_base_color()
-        props.principled_nodes_found = len(get_principled_nodes())
+        props.show_base_color_extras = check_if_linked_base_color(context)
+        props.principled_nodes_found = len(get_context_principled_nodes(context))
 
-        set_base_color_default()
-        set_principled_default()
+        set_base_color_default(context)
+        set_principled_default(context)
         
         # Generate all principled presets in JSON file
         generate_preset_data()
@@ -398,7 +398,7 @@ class PT_OP_RemoveHelperNodes(bpy.types.Operator):
     
     def execute(self, context):
 
-        nodes = get_principled_nodes()
+        nodes = get_context_principled_nodes(context)
         node_trees = (nt.id_data for nt in nodes)
         
         for nt in node_trees:   

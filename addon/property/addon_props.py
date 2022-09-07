@@ -4,10 +4,7 @@ import bpy
 
 from bpy.types import PropertyGroup
                      
-
 from ..utility.constants import *
-from ..utility.functions import write_smart_mat_json
-
 from .update_functions import *
 from .enum_functions import *
 
@@ -37,12 +34,12 @@ class PT_PresetsCollection(PropertyGroup):
        
 class PT_SMSPropData(PropertyGroup):
     
-    prop_name : bpy.props.StringProperty(update = write_smart_mat_json) 
-    prop_value : bpy.props.FloatProperty(update = write_smart_mat_json)    
+    prop_name : bpy.props.StringProperty(update = write_update_smart_mat_json) 
+    prop_value : bpy.props.FloatProperty(update = write_update_smart_mat_json)    
     prop_operation : bpy.props.EnumProperty(
         name= 'Operation',
         default = '==',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('==','Equal', ''),
             ('<','Less Than', ''),
@@ -56,22 +53,22 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
     
     To add a new property, this new property should be:
     - Registered in this class
-    - Added to write smart preset JSON Function "write_smart_mat_json"
+    - Added to write smart preset JSON Function "write_update_smart_mat_json"
     - Added to load smart preset JSON Function "generate_smart_preset_data"
      
     The name of the key in JSON and the name of the property in this class should be the same
     
     #toggle_edit : bpy.props.BoolProperty(name="Toggle Edit")'''
     
-    active_preset: bpy.props.BoolProperty(default = True, name="Active Preset", update = write_smart_mat_json)    
-    smart_preset_name : bpy.props.StringProperty(name="Smart Preset Name", update = write_smart_mat_json)
-    preset_to_activate : bpy.props.EnumProperty(name= "Preset", items=update_preset_enum_prop, update = write_smart_mat_json)
+    active_preset: bpy.props.BoolProperty(default = True, name="Active Preset", update = write_update_smart_mat_json)    
+    smart_preset_name : bpy.props.StringProperty(name="Smart Preset Name", update = write_update_smart_mat_json)
+    preset_to_activate : bpy.props.EnumProperty(name= "Preset", items=update_preset_enum_prop, update = write_update_smart_mat_json)
     
     # Run Node Setup
     select_node_setup: bpy.props.EnumProperty(
         name= 'Select Node Setup',
         default = 'NONE',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('NONE','None', ''),
             ('BUMP_SETUP','Bump Setup', ''),
@@ -81,38 +78,38 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
     
     
     # Material Name Detect
-    use_name_detect : bpy.props.BoolProperty(default = False, name='Use Name Detect', update = write_smart_mat_json)
+    use_name_detect : bpy.props.BoolProperty(default = False, name='Use Name Detect', update = write_update_smart_mat_json)
     name_detect_operation: bpy.props.EnumProperty(
         name= 'Name Detect Operation',
         default = 'and',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('and','And', ''),
             ('or','Or', ''),
         ]        
     )
     
-    material_string : bpy.props.StringProperty(name="Name String", update = write_smart_mat_json) 
+    material_string : bpy.props.StringProperty(name="Name String", update = write_update_smart_mat_json) 
      
     # RGB detect
     
-    use_rgb_detect: bpy.props.BoolProperty(default = False, name='Use RGB Detect', update = write_smart_mat_json)
+    use_rgb_detect: bpy.props.BoolProperty(default = False, name='Use RGB Detect', update = write_update_smart_mat_json)
     rgb_operation : bpy.props.EnumProperty(
         name= 'RGB Operation',
         default = 'and',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('and','And', ''),
             ('or','Or', ''),
         ]        
     )
     
-    detect_r: bpy.props.BoolProperty(default = False, name='Detect R', update = write_smart_mat_json)
-    r_value : bpy.props.FloatProperty(update = write_smart_mat_json,name='R')
+    detect_r: bpy.props.BoolProperty(default = False, name='Detect R', update = write_update_smart_mat_json)
+    r_value : bpy.props.FloatProperty(update = write_update_smart_mat_json,name='R')
     r_operation : bpy.props.EnumProperty(
         name= 'Operation',
         default = '==',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('==','Equal', ''),
             ('<','Less Than', ''),
@@ -120,12 +117,12 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
         ]        
     )
     
-    detect_g: bpy.props.BoolProperty(default = False, name='Detect G', update = write_smart_mat_json)
-    g_value : bpy.props.FloatProperty(update = write_smart_mat_json,name='G')
+    detect_g: bpy.props.BoolProperty(default = False, name='Detect G', update = write_update_smart_mat_json)
+    g_value : bpy.props.FloatProperty(update = write_update_smart_mat_json,name='G')
     g_operation : bpy.props.EnumProperty(
         name= 'Operation',
         default = '==',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('==','Equal', ''),
             ('<','Less Than', ''),
@@ -133,12 +130,12 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
         ]        
     )
     
-    detect_b: bpy.props.BoolProperty(default = False, name='Detect B', update = write_smart_mat_json)
-    b_value : bpy.props.FloatProperty(update = write_smart_mat_json,name='B')
+    detect_b: bpy.props.BoolProperty(default = False, name='Detect B', update = write_update_smart_mat_json)
+    b_value : bpy.props.FloatProperty(update = write_update_smart_mat_json,name='B')
     b_operation : bpy.props.EnumProperty(
         name= 'Operation',
         default = '==',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('==','Equal', ''),
             ('<','Less Than', ''),
@@ -146,12 +143,12 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
         ]        
     )
     
-    detect_a: bpy.props.BoolProperty(default = False, name='Detect A', update = write_smart_mat_json)
-    a_value : bpy.props.FloatProperty(update = write_smart_mat_json,name='A')
+    detect_a: bpy.props.BoolProperty(default = False, name='Detect A', update = write_update_smart_mat_json)
+    a_value : bpy.props.FloatProperty(update = write_update_smart_mat_json,name='A')
     a_operation : bpy.props.EnumProperty(
         name= 'Operation',
         default = '==',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('==','Equal', ''),
             ('<','Less Than', ''),
@@ -160,11 +157,11 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
     )
     
     # Prop Detect
-    use_prop_detect : bpy.props.BoolProperty(default = False, name='Use Prop Detect', update = write_smart_mat_json)
+    use_prop_detect : bpy.props.BoolProperty(default = False, name='Use Prop Detect', update = write_update_smart_mat_json)
     prop_detect_operation : bpy.props.EnumProperty(
         name= 'Prop Detect Operation',
         default = 'and',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('and','And', ''),
             ('or','Or', ''),
@@ -176,7 +173,7 @@ class PT_SmartMaterialSetupPresets(PropertyGroup):
     prop_to_add : bpy.props.EnumProperty(
         name= 'Add',
         default = 'Alpha',
-        update = write_smart_mat_json,
+        update = write_update_smart_mat_json,
         items = [
             ('Alpha','Alpha', ''),
             ('Roughness','Roughness', ''),

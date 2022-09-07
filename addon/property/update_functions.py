@@ -1,21 +1,23 @@
 import bpy
+import json
 
 from .update_functions import *
 from ..utility.constants import *
 from ..utility.constants import *
 from ..utility.functions import (
-                                 get_principled_nodes,
+                                 get_context_principled_nodes,
                                  check_if_linked_base_color,
                                  create_mixing_color_group,
                                  set_principled_default,
                                  reset_principled_node,
                                  reset_principled_node_preset,
+                                 get_prefs,
                                  )    
 
 def activate_selected_preset(self, context, preset_name, principled = None, load_mode = 'UPDATE_PROP'):
         
-    set_principled_default()
-    reset_principled_node_preset()
+    set_principled_default(context)
+    reset_principled_node_preset(context)
     
     if principled:
         reset_principled_node(principled)
@@ -65,7 +67,7 @@ def base_color_helper(context, node_tree, input,value,principled):
     }
     
     # Checking if other nodes has connected base color
-    principled_nodes = get_principled_nodes(context)
+    principled_nodes = get_context_principled_nodes(context)
     has_base_color_link = False
     
     for node in principled_nodes:
@@ -345,11 +347,13 @@ def update_main_props(self,context,origin):
     ->The origin can also be 'all', that will be used when the 'auto update' is not being used, 
     and the operator is trigged, telling the function to update all props'''
     
+    prefs = get_prefs()
+    
     if hasattr(self,'block_auto_update'):
         if self.block_auto_update:
             return
     
-    for n in get_principled_nodes(create_materials = True):
+    for n in get_context_principled_nodes(context, auto_create_materials = prefs.auto_new_material):
         node_tree = n.id_data 
 
         for i in n.inputs:            
@@ -379,7 +383,7 @@ def update_color_props(self, context, origin):
     # Checking for color helper nodes
     
     nodes_groups_helpers = []
-    principled_nodes = get_principled_nodes(create_materials = False)
+    principled_nodes = get_context_principled_nodes(context)
 
     if origin == 'Hue':
         props.use_b_hue = True
@@ -474,6 +478,71 @@ def update_color_props(self, context, origin):
 def update_enum_materials_node_count(self,context):
     '''Update principled nodes count'''
     
-    self.principled_nodes_found = len(get_principled_nodes())
-    self.show_base_color_extras = check_if_linked_base_color()
+    self.principled_nodes_found = len(get_context_principled_nodes(context))
+    self.show_base_color_extras = check_if_linked_base_color(context)
+
+# -------------------------------------------------------------
+# JSON Write Update
+# -------------------------------------------------------------
+    
+def write_update_smart_mat_json(self, context):
+    '''Write/Update the smart material json file'''
+        
+    props = context.scene.principledtools
+    
+    if props.block_smart_material_setup_writing_data:
+        return
+
+    #print("Writing Smart Preset Data")
+    
+    data = {
+        "Smart Presets" : {}
+    }
+    
+    for i in props.smart_material_setup_presets:
+        
+        prop_detect = {}
+        
+        for pp in i.prop_data_detect:
+            prop_detect[pp.prop_name] = [pp.prop_value,pp.prop_operation]
+                    
+        data["Smart Presets"][i.smart_preset_name] = {
+            
+            
+            "preset": i.preset_to_activate,
+            "active":i.active_preset,
+            "select_node_setup": i.select_node_setup,
+            
+            "use_name_detect": i.use_name_detect,
+            "name_detect_operation": i.name_detect_operation,
+            "keys": i.material_string,
+                       
+            "use_rgb_detect": i.use_rgb_detect,
+            "rgb_operation": i.rgb_operation,
+            
+            "detect_r":i.detect_r,
+            "r_value":i.r_value,
+            "r_operation":i.r_operation,
+            
+            "detect_g":i.detect_g,
+            "g_value":i.g_value,
+            "g_operation":i.g_operation,
+            
+            "detect_b":i.detect_b,
+            "b_value":i.b_value,
+            "b_operation":i.b_operation,
+            
+            "detect_a":i.detect_a,
+            "a_value":i.a_value,
+            "a_operation":i.a_operation,
+            
+            "use_prop_detect": i.use_prop_detect,
+            "prop_detect_operation": i.prop_detect_operation,
+            "prop_data_detect": prop_detect
+                   
+            }
+                        
+    with open(smart_mat_s_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
  

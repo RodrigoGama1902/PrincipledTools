@@ -3,20 +3,21 @@ import os
 import json
 
 from ..property.addon_props import activate_selected_preset, update_preset_enum_prop
+from ..property.update_functions import write_update_smart_mat_json
+
 from .node_operators import create_quick_bump, create_quick_translucent
 from ..utility.constants import *
 from ..utility.functions import (
                                 generate_smart_preset_data,
-                                active_use_nodes,
+                                active_use_nodes_in_material,
                                 reset_principled_node,
-                                write_smart_mat_json,
                                 get_prefs
                                 )
 
 
+
 def draw_smart_mat_presets_ui(self,layout):
 
-    empty_favorites = False
     props = bpy.context.scene.principledtools
     
     #smart_material_setup_presets
@@ -183,7 +184,7 @@ class PT_OP_SmartMaterialSetup(bpy.types.Operator):
                         detected_rule = None
                         material_detected = False
                         
-                        active_use_nodes(mat)
+                        active_use_nodes_in_material(mat)
                         
                         original_principled = [n for n in mat.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'][0]
                   
@@ -321,13 +322,13 @@ class PT_OP_SmartMaterialSetup(bpy.types.Operator):
                         
                         print(f'{detected_rule.smart_preset_name} Detected - {mat.name}')
                         
-                        active_use_nodes(mat)                        
-                        get_principled_nodes = [n for n in mat.node_tree.nodes if n.type == 'BSDF_PRINCIPLED']
+                        active_use_nodes_in_material(mat)                        
+                        mat_principled_nodes = [n for n in mat.node_tree.nodes if n.type == 'BSDF_PRINCIPLED']
                         
-                        if not get_principled_nodes:
+                        if not mat_principled_nodes:
                             continue
                         
-                        main_principled = get_principled_nodes[0]                      
+                        main_principled = mat_principled_nodes[0]                      
                         reset_principled_node(main_principled)
                         
                         #--------------------------------------------------
@@ -365,7 +366,7 @@ class PT_OP_SmartMaterialSetup(bpy.types.Operator):
         default_x = event.mouse_x
         default_y = event.mouse_y
         
-        generate_smart_preset_data()
+        generate_smart_preset_data(context)
         
         if self.rule_settings:
             
@@ -419,7 +420,7 @@ class PT_OP_AddSmartMatSetupJSON(bpy.types.Operator):
         #new_s_preset.material_string = self.name_string
         new_s_preset.preset_to_activate = self.preset_to_activate
         
-        write_smart_mat_json(self,context)
+        write_update_smart_mat_json(self,context)
             
         return {'FINISHED'}   
 
@@ -456,7 +457,7 @@ class PT_OP_RemoveSmartMatSetupJSON(bpy.types.Operator):
             if p.smart_preset_name == self.rule_name:
                 props.smart_material_setup_presets.remove(idx)
                
-        write_smart_mat_json(self,context)
+        write_update_smart_mat_json(self,context)
             
         return {'FINISHED'}   
              
@@ -496,7 +497,7 @@ class PT_OP_MoveSmartMatSetupJSON(bpy.types.Operator):
                 props.smart_material_setup_presets.move(idx, idx+1)
                 props.sms_custom_index += 1
             
-        write_smart_mat_json(self,context)
+        write_update_smart_mat_json(self,context)
                       
         return {'FINISHED'}   
 
@@ -555,7 +556,7 @@ class PT_OP_ManagePropDetectSmartMatSetupJSON(bpy.types.Operator):
         if self.action == 'REMOVE':         
             smart_preset.prop_data_detect.remove(smart_preset_idx)  #type:ignore
               
-        write_smart_mat_json(self,context)
+        write_update_smart_mat_json(self,context)
                       
         return {'FINISHED'}   
 

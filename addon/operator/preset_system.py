@@ -12,9 +12,7 @@ from ..utility.functions import (json_check,
 def draw_presets_ui(self,layout):
     
     props = bpy.context.scene.principledtools
-
-    empty_favorites = False
-
+    
     box = layout.box()
     box.label(text='Principled Node Setups')
     box.operator('pt.quickbump')
@@ -26,25 +24,10 @@ def draw_presets_ui(self,layout):
     
     preset_col = layout.column(align=True)
     
-    #row = layout.row()
-    
     for i in props.loaded_presets:
         row = preset_col.row(align=True)
         row.operator("pt.activatepreset",text=i.preset_name).preset_name = i.preset_name
         row.operator("pt.removepreset", text='', icon='X').preset_name = i.preset_name
-        
-    '''
-    if os.path.exists(favorites_path) and json_check(favorites_path): 
-        
-        with open(favorites_path, encoding='utf8') as json_file:
-            data = json.load(json_file)  
-            if not data["Presets"]:
-                empty_favorites = True
-            else:
-                for i in data["Presets"]:  
-                    row = preset_col.row(align=True)
-                    row.operator("pt.activatepreset",text=i).preset_name = i
-    '''
                     
 class PT_PresetSystem(bpy.types.Operator): # change material props from mp 
     """Use Preset"""
@@ -53,7 +36,7 @@ class PT_PresetSystem(bpy.types.Operator): # change material props from mp
     bl_label = "Use Preset"
     bl_options = {'REGISTER','UNDO'}
 
-    prop_test : bpy.props.BoolProperty()
+    prop_test : bpy.props.BoolProperty() #type:ignore
 
     @classmethod
     def poll(cls, context):
@@ -91,7 +74,7 @@ class PT_ActivatePreset(bpy.types.Operator): # change material props from mp
     bl_label = "Activate Preset"
     bl_options = {'REGISTER', 'INTERNAL'}
 
-    preset_name : bpy.props.StringProperty(default = "") 
+    preset_name : bpy.props.StringProperty(default = "") #type:ignore
        
     def execute(self, context):
         
@@ -133,7 +116,7 @@ class PT_AddPPreset(bpy.types.Operator): # change material props from mp
     bl_label = "Save as Preset"
     bl_options = {'REGISTER', 'INTERNAL'}
 
-    preset_name : bpy.props.StringProperty(default = "")
+    preset_name : bpy.props.StringProperty(default = "") #type:ignore
         
     def execute(self, context):
         
@@ -176,7 +159,7 @@ class PT_AddPPreset(bpy.types.Operator): # change material props from mp
                 else:                  
                     new_prop.prop_value = prop_data[p]
         
-            write_preset_json(self,context)
+            write_preset_json(context)
                                        
         self.report({'INFO'},"Preset Saved")
         return {'FINISHED'}
@@ -209,7 +192,7 @@ class PT_RemovePreset(bpy.types.Operator): # change material props from mp
     bl_label = "Remove Preset"
     bl_options = {'REGISTER', 'INTERNAL'}
 
-    preset_name : bpy.props.StringProperty(default = "") 
+    preset_name : bpy.props.StringProperty(default = "") #type:ignore
        
     def execute(self, context):
         
@@ -221,7 +204,7 @@ class PT_RemovePreset(bpy.types.Operator): # change material props from mp
             if p.preset_name == self.preset_name:
                 props.loaded_presets.remove(idx)
         
-        write_preset_json(self,context)
+        write_preset_json(context)
         
         self.report({'INFO'},"Preset Removed")        
         return {'FINISHED'}
