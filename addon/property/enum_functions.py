@@ -1,7 +1,6 @@
 import bpy
 
-def update_preset_enum_prop(self,context):
-    '''Update enum prop (presets)'''
+def get_presets_enum_items(self,context):
     
     Enum_items = [("NONE","None",""),]
     

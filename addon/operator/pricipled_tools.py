@@ -211,7 +211,7 @@ class PT_MainPrincipledTool(bpy.types.Operator): # change material props from mp
         set_principled_default(context)
         
         # Generate all principled presets in JSON file
-        generate_preset_data()
+        generate_preset_data(context)
 
         # Set all principled props bool to False, it's necessary because after setting to default with these functions above,
         # all props will be updated

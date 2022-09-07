@@ -1,16 +1,7 @@
 import bpy
 
-from bpy.props import (IntProperty,
-                       BoolProperty,
-                       StringProperty,
-                       CollectionProperty)
-
-from bpy.types import (Operator,
-                       Panel,
-                       PropertyGroup,
-                       UIList)
-
-from .addon_props import PT_Addon_Props, PT_SmartMaterialSetupPresets, PT_PresetsCollection, PT_PresetPropData, PT_SMSPropData, PT_SmartMaterialSetupsIgnoreMaterials
+from .addon_props import PT_Addon_Props
+from .collection_props import PT_SmartMaterialSetupPresets, PT_PresetsCollection, PT_PresetPropData, PT_SMSPropData, PT_SmartMaterialSetupsIgnoreMaterials
 from .addon_preferences import PT_AddonPrefs
 
 classes = (

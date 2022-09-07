@@ -49,7 +49,7 @@ class PT_PresetSystem(bpy.types.Operator): # change material props from mp
 
     def invoke(self, context, event):
         
-        generate_preset_data()
+        generate_preset_data(context)
         
         default_x = event.mouse_x
         default_y = event.mouse_y

@@ -2,7 +2,7 @@ import bpy
 import os
 import json
 
-from ..property.addon_props import activate_selected_preset, update_preset_enum_prop
+from ..property.addon_props import activate_selected_preset, get_presets_enum_items
 from ..property.update_functions import write_update_smart_mat_json
 
 from .node_operators import create_quick_bump, create_quick_translucent
@@ -402,7 +402,7 @@ class PT_OP_AddSmartMatSetupJSON(bpy.types.Operator):
     bl_options = {'REGISTER', 'INTERNAL'}
     
     rule_name : bpy.props.StringProperty(name='Smart Preset Name') #type:ignore
-    preset_to_activate : bpy.props.EnumProperty(name= "Preset", items=update_preset_enum_prop) #type:ignore
+    preset_to_activate : bpy.props.EnumProperty(name= "Preset", items=get_presets_enum_items) #type:ignore
     
     def invoke(self, context, event):
         
