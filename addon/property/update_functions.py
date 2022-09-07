@@ -54,24 +54,41 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
                                     input.default_value = p.prop_value
   
                                 
-def base_color_helper(node_tree, input,value,principled):
-    '''Create Help Color Group on input base color when necessary'''
+def base_color_helper(context, node_tree, input,value,principled):
     
-    props = bpy.context.scene.principledtools
-
     default_x_offset = principled.location[0] -150
 
     y_input_locations = {
         'Base Color': (default_x_offset, principled.location[1] - 105),     
     }
     
-    # TODO adicionar verificação se os principled selecionados tem input de base color
-    # Se tiver, e esse aqui não, criar um input RGB node, pra poder sofrer os ajustes de HSV corretamente
+    # Checking if other nodes has connected base color
+    principled_nodes = get_principled_nodes(context)
+    has_base_color_link = False
     
+    for node in principled_nodes:
+        if node.inputs[input.name].links:
+            has_base_color_link = True
+    
+    # If other node has linked base color, creates and RGB input node, so settings like HSV can be changed
+    if has_base_color_link and not input.links:
+        
+        rgb_input = node_tree.nodes.new('ShaderNodeRGB')
+        rgb_input.name = rgb_node_name 
+        rgb_input.outputs[0].default_value = input.default_value
+        rgb_input.location = (y_input_locations['Base Color'][0] - 150,y_input_locations['Base Color'][1])
+        rgb_input.hide = True
+            
+        link = node_tree.links.new
+        link(rgb_input.outputs[0], input) 
+        
     mix_group = None
     
     if input.links: 
-        if not input.links[0].from_node.name.startswith(mix_color_group):
+        # Checking if basecolor is connected to any node
+        
+        if not input.links[0].from_node.name.startswith(mix_color_group):    
+            # If connected to any node other than Mix Color Group, creates Mix Color Group
             
             new_mix_group = create_mixing_color_group()
             
@@ -87,16 +104,18 @@ def base_color_helper(node_tree, input,value,principled):
             link(mix_group.outputs[0], input)     
              
         else:
+            # Else, just update the Mix Color Group input value
             mix_group = input.links[0].from_node
-                       
-        props.use_b_use_color_mix = True     
-        
+            
+        # Getting the mix_node inside the Mix Color Group                             
         mix_node = [n for n in mix_group.node_tree.nodes if n.type == 'MIX_RGB']
+        
         if mix_node:
-            mix_node = mix_node[0]            
+            mix_node = mix_node[0]              
             mix_node.inputs[2].default_value = value 
 
     else:
+        # If not connected, just set base color to input value
         if value:
             input.default_value = value
             
@@ -104,8 +123,7 @@ def base_color_helper(node_tree, input,value,principled):
 
 
 def math_node_helper(node_tree, input,value,principled):
-    '''Creates Math and Clamp nodes when current input has any node connected in'''
-    
+        
     def constant_y_position(y_index, base_y = 189):
         '''Generate correct y position using y-index from node input'''
         
@@ -135,7 +153,7 @@ def math_node_helper(node_tree, input,value,principled):
         'Emission Strength': (default_x_offset, constant_y_position(16)),
         'Alpha': (default_x_offset, constant_y_position(17)),
     }
-
+    
     if input.links: 
        
         if not input.links[0].from_node.name.startswith(multiply_node_name):
@@ -156,17 +174,13 @@ def math_node_helper(node_tree, input,value,principled):
         
         math_node.inputs[1].default_value = value * 2
     else:
+                
         input.default_value = value
 
 # -------------------------------------------------------------
 # Update Props Settings
 # Update Principled Props Real Time
 # -------------------------------------------------------------
-
-def update_principled_props_closure(prop):
-    '''closure to get property that trigged the main update function'''
-        
-    return lambda a,b: update_props(a,b,prop)
 
 
 def update_normal_principled_input(self, input, origin, node_tree, principled):
@@ -273,7 +287,6 @@ def update_normal_principled_input(self, input, origin, node_tree, principled):
                 update_found_normal_node(from_socket_node, from_socket_socket) #type: ignore
     
     i = input
-    n = principled 
 
     props = bpy.context.scene.principledtools
 
@@ -293,14 +306,14 @@ def update_normal_principled_input(self, input, origin, node_tree, principled):
             update_found_normal_node(from_node, from_socket)
 
 
-def update_single_principled_prop(self, input, origin, node_tree, principled, prop_name):
+def update_single_principled_prop(self, context, input, origin, node_tree, principled, prop_name):
     '''This function will automatically update each principled prop by it input name'''
 
     i = input
     n = principled 
 
-    props = bpy.context.scene.principledtools
-
+    props = context.scene.principledtools
+    
     prop_name = prop_name.replace(' ','_') # Replace empty spaces like in "Transmission Roughness"
 
     prop = getattr(props,'p_' + prop_name)
@@ -308,12 +321,12 @@ def update_single_principled_prop(self, input, origin, node_tree, principled, pr
 
     if i.name == origin: # if True, means that this property is changing real time, so the prop bool should be set to True
         setattr(props,'use_' + prop_name, True)
-
+        
     if props.auto_update or origin == 'All': # If True, means that the update_props function is running through operator or through auto update                
-        if prop_bool:
-            if prop_name == 'base_color':   # Base color update is different than simple props updates that will use math node helpers 
-                base_color_helper(node_tree, i, prop,n)
-            else:
+        if prop_bool:  
+            if prop_name == 'base_color':   # Base color update is different than simple props updates that will use math node helpers                 
+                base_color_helper(context, node_tree, i, prop,n)
+            else:            
                 math_node_helper(node_tree, i, prop,n)
         
   
@@ -323,7 +336,7 @@ def update_props(self,context,origin):
     if hasattr(self,'block_auto_update'):
         if self.block_auto_update:
             return
-
+    
     nodes = get_principled_nodes(create_materials = True)
     
     for n in nodes:
@@ -336,7 +349,7 @@ def update_props(self,context,origin):
 
                 if i.name in simple_update:
                                   
-                    update_single_principled_prop(self, i, origin, node_tree, n, i.name.lower())
+                    update_single_principled_prop(self, context, i, origin, node_tree, n, i.name.lower())
                 
                 if i.name == 'Normal':
 
@@ -346,77 +359,36 @@ def update_props(self,context,origin):
 # Base Color Settings
 # -------------------------------------------------------------
 
-
-def update_base_color_settings_closure(prop):
-    '''closure to get property that trigged the main update function'''
-    
-    return lambda a,b: update_color_settings(a,b,prop)
-
 def update_color_settings(self, context, origin=""):
     
     if hasattr(self,'block_auto_update'):
         if self.block_auto_update:
             return
-
-    objs = context.selected_objects
+        
     props = context.scene.principledtools
     
     # Checking for color helper nodes
     
     nodes_groups_helpers = []
-    principled_nodes = []
+    principled_nodes = get_principled_nodes(create_materials = False)
 
-    if props.enum_materials == '0':
-
-        for ob in objs:
-            if ob.data.materials:
-                for mat in ob.data.materials:
-                    if not mat.use_nodes:
-                        active_use_nodes(mat)
-
-                    for nod in mat.node_tree.nodes:
-                        if nod.type == 'GROUP':
-                            if nod.name.endswith(node_identifier):                   
-                                nodes_groups_helpers.append(nod)
-                        if nod.type == 'BSDF_PRINCIPLED':
-                                principled_nodes.append(nod)
-
-    
-    if props.enum_materials == '1':
-        
-        if context.active_object:
-            mat = context.active_object.active_material
-            if mat:
-                if not mat.use_nodes:
-                    active_use_nodes(mat)
-
-                for nod in context.active_object.active_material.node_tree.nodes:
-                    if nod.type == 'GROUP':
-                        if nod.name.endswith(node_identifier):                   
-                            nodes_groups_helpers.append(nod)
-                    if nod.type == 'BSDF_PRINCIPLED':
-                        principled_nodes.append(nod)
-
-    if origin == 'HUE':
+    if origin == 'Hue':
         props.use_b_hue = True
-    if origin == 'SATURATION':
+    if origin == 'Saturation':
         props.use_b_saturation = True 
-    if origin == 'VALUE':
+    if origin == 'Value':
         props.use_b_value = True 
     
-    if origin == 'BRIGHT':
+    if origin == 'Bright':
         props.use_b_bright = True 
-    if origin == 'CONTRAST':
+    if origin == 'Contrast':
         props.use_b_contrast = True 
     
-    if origin == 'GAMMA':
-        props.use_b_gamma = True 
-        
-    if origin == 'USE MIX':
-        props.use_b_use_color_mix = True 
-    if origin == 'MIX FAC':
+    if origin == 'Gamma':
+        props.use_b_gamma = True        
+    if origin == 'Color Mix Fac':
         props.use_b_color_mix_fac = True  
-        
+                
     # Only when using HSV 
          
     # It will create a color group node in each principled node when inputs like HUE, SATURATION, VALUE where trigged but none of this nodes was created
@@ -432,89 +404,58 @@ def update_color_settings(self, context, origin=""):
         
     if props.auto_update or origin == 'All':
         
-        # TODO Remove "If not nodes_groups_helpers", se não em caso que não existe apenas um, ele ignora
-        
-        if not nodes_groups_helpers:
-            
-            # Create color helper group node
-            for p_node in principled_nodes:
-                
-                mix_group = base_color_helper(p_node.id_data, p_node.inputs[0],props.p_base_color,p_node)
-                                    
-                if not props.use_base_color:
-                    # Mute mix node when there is no base color update
-                    for node in mix_group.node_tree.nodes: #type: ignore
-                        if node.type == 'MIX_RGB':
-                            node.mute = True        
-                            
-                nodes_groups_helpers.append(mix_group)
+        # Create color helper group node
+        for p_node in principled_nodes:         
+            mix_group = base_color_helper(context, p_node.id_data, p_node.inputs[0],props.p_base_color,p_node)             
+            nodes_groups_helpers.append(mix_group)
             
     for node in nodes_groups_helpers:
         
         if not node:
             continue
-            
+                    
         for n in node.node_tree.nodes:      
-            if n.type == 'MIX_RGB':
-
-                if origin == 'USE MIX' and props.auto_update or origin == 'All':
-                    if props.use_b_use_color_mix:
-                        if not props.b_use_color_mix:
-                            n.inputs[0].default_value = 0
-                        else:                     
-                            n.inputs[0].default_value = props.b_color_mix_fac
-    
-                if props.b_use_color_mix:
-                    if origin == 'MIX FAC' and props.auto_update or origin == 'All':
-                        if props.use_b_color_mix_fac:
-                            n.inputs[0].default_value = props.b_color_mix_fac
-                
-                # Only when auto update is off
-                
-                # The base color updates only the main operator is confirmed, while the other props of the mixing color operation
-                # are update when the mixing color operator is confirmed
-                # that's why was necessary to manually set the base color when the mixing color operation is confirmed
-                if origin == 'All':
-                    if props.use_base_color:
-                        n.inputs[2].default_value = props.p_base_color
-
+            if n.type == 'MIX_RGB':                            
+                if origin == 'Color Mix Fac' and (props.auto_update or origin == 'All'):
+                    n.inputs[0].default_value = props.b_color_mix_fac
+            
                 continue
 
             if n.type == 'HUE_SAT':
 
-                if origin == 'HUE' and props.auto_update or origin == 'All':
+                if origin == 'Hue' and props.auto_update or origin == 'All':
                     if props.use_b_hue:
                         n.inputs[0].default_value = props.b_hue
                 
-                if origin == 'SATURATION' and props.auto_update  or origin == 'All':
+                if origin == 'Saturation' and props.auto_update  or origin == 'All':
                     if props.use_b_saturation:
                         n.inputs[1].default_value = props.b_saturation
                     
-                if origin == 'VALUE' and props.auto_update  or origin == 'All':
+                if origin == 'Value' and props.auto_update  or origin == 'All':
                     if props.use_b_value:
                         n.inputs[2].default_value = props.b_value   
                 
-                continue 
+                continue              
                 
             if n.type == 'BRIGHTCONTRAST':
 
-                if origin == 'BRIGHT' and props.auto_update or origin == 'All':
+                if origin == 'Bright' and props.auto_update or origin == 'All':
                     if props.use_b_bright:
                         n.inputs[1].default_value = props.b_bright
                 
-                if origin == 'CONTRAST' and props.auto_update  or origin == 'All':
+                if origin == 'Contrast' and props.auto_update  or origin == 'All':
                     if props.use_b_contrast:
                         n.inputs[2].default_value = props.b_contrast
                                         
-                continue
+                continue     
             
             if n.type == 'GAMMA':
 
-                if origin == 'GAMMA' and props.auto_update or origin == 'All':
+                if origin == 'Gamma' and props.auto_update or origin == 'All':
                     if props.use_b_gamma:
                         n.inputs[1].default_value = props.b_gamma
                                                             
-                continue 
+                continue
 
 # -------------------------------------------------------------
 # Extra Function Updates
@@ -522,6 +463,7 @@ def update_color_settings(self, context, origin=""):
 
 def update_enum_materials_node_count(self,context):
     '''Update principled nodes count'''
+    
     self.principled_nodes_found = len(get_principled_nodes())
     self.show_base_color_extras = check_if_linked_base_color()
  

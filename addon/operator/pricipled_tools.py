@@ -233,7 +233,7 @@ class PT_OP_CreateNewMaterial(bpy.types.Operator): # change material props from 
     bl_label = "Create New Material"
     bl_options = {'REGISTER', 'INTERNAL'}
 
-    material_name : bpy.props.StringProperty(default = "Material") 
+    material_name : bpy.props.StringProperty(default = "Material") # type:ignore
 
     def execute(self, context):
 
@@ -317,18 +317,14 @@ class PT_OP_BaseColorSettings(bpy.types.Operator):
         #box.label(text='Color Mix')
         
         row = box.row()
-        row.active = props.use_b_use_color_mix
-        row.prop(props,'b_use_color_mix',slider=True)
         
         color_row = box.row() 
         color_row.active = props.use_base_color    
         color_row.prop(props,'p_base_color')
-
-        if props.b_use_color_mix:
-
-            row = box.row()
-            row.active = props.use_b_color_mix_fac
-            row.prop(props,'b_color_mix_fac',slider=True)
+        
+        row = box.row()
+        row.active = props.use_b_color_mix_fac
+        row.prop(props,'b_color_mix_fac',slider=True)
 
         box = layout.box()
         box.label(text='HSV')

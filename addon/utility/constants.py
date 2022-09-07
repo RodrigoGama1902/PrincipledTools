@@ -15,6 +15,7 @@ smart_mat_s_path_test = os.path.join(os.path.dirname(pathlib.Path(__file__).pare
 
 node_identifier = '_PRINCIPLEDTOOLSNODE'
 
+rgb_node_name = 'RGB' + node_identifier
 multiply_node_name = 'MULTIPLY' + node_identifier
 mix_node_name = 'MIX' + node_identifier
 hue_node_name = 'HUE' + node_identifier

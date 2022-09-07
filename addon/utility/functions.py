@@ -10,6 +10,7 @@ def convert_ab_path(filepath):
 
     return filepath
 
+
 def json_check(json_path):
 
     try:
@@ -19,6 +20,7 @@ def json_check(json_path):
         print('QS: Invalid Json')
         return False
     return True
+
 
 def set_principled_default():
 
@@ -56,6 +58,7 @@ def set_principled_default():
         
     props.block_auto_update = False
 
+
 def set_base_color_default():
 
     props = bpy.context.scene.principledtools
@@ -81,6 +84,7 @@ def set_base_color_default():
     
     props.block_auto_update = False
 
+
 def create_new_material(ob, material_name):
 
     # Creating Material
@@ -95,6 +99,7 @@ def create_new_material(ob, material_name):
     bpy.ops.object.material_slot_assign()
     
     return new_material
+
 
 def active_use_nodes(mat):
 
@@ -123,6 +128,7 @@ def check_if_linked_base_color():
             return True 
     return False
 
+
 def get_prefs():
     return bpy.context.preferences.addons[addon_name].preferences
 
@@ -146,7 +152,7 @@ def get_principled_nodes(create_materials = False):
     materials = [] # Store materials, in this way, principled nodes will not be duplicated
     nodes = []
 
-    if props.enum_materials == '0':       
+    if props.enum_materials == 'ALL_MATERIALS':       
         objs = bpy.context.selected_objects
 
         for ob in objs:
@@ -166,7 +172,7 @@ def get_principled_nodes(create_materials = False):
                 else:
                     create_new_material_empty_data(ob, materials, nodes)                
     
-    if props.enum_materials == '1':        
+    if props.enum_materials == 'ACTIVE_MATERIAL':        
         obj = bpy.context.active_object
    
         if obj:
@@ -181,6 +187,7 @@ def get_principled_nodes(create_materials = False):
                 create_new_material_empty_data(obj, materials, nodes)                
                    
     return nodes
+
 
 def get_all_nodes(node_tree):
     
@@ -197,6 +204,7 @@ def get_all_nodes(node_tree):
             nodes.append(n)
     
     return nodes
+ 
     
 def create_mixing_color_group():
     
@@ -216,7 +224,7 @@ def create_mixing_color_group():
     mix_node = group_tree.nodes.new(type='ShaderNodeMixRGB')
     mix_node.name = mix_node_name
     mix_node.hide = True
-    mix_node.inputs[0].default_value = 0.5
+    mix_node.inputs[0].default_value = 0
  
     # Hue Node
 
@@ -255,8 +263,76 @@ def create_mixing_color_group():
     link(hue_node.outputs[0], mix_node.inputs[1])
     link(mix_node.outputs[0], group_out.inputs[0])
     
-    return group_tree   
-                                      
+    return group_tree  
+   
+
+def get_context_materials(context):
+    '''Get all context materials, can be active material only or all materials in selected objects'''
+    
+    props = context.scene.principledtools
+    materials = []
+    
+    if props.enum_materials == 'ALL_MATERIALS':       
+        objs = context.selected_objects
+
+        for ob in objs:
+            if hasattr(ob.data,'materials'):
+                if ob.data.materials:                    
+                    for mat in ob.data.materials:
+                        if mat:
+                            if not mat in materials:
+                                if not mat.use_nodes:
+                                    active_use_nodes(mat)
+                                materials.append(mat)
+                #else:
+                #    create_new_material_empty_data(ob, materials, nodes)                
+    
+    if props.enum_materials == 'ACTIVE_MATERIAL':        
+        obj = context.active_object
+   
+        if obj:
+            mat = obj.active_material
+            if mat:
+                if not mat.use_nodes:
+                    active_use_nodes(mat)
+                materials.append(mat)
+                    
+            #else:
+            #    create_new_material_empty_data(obj, materials, nodes)  
+    
+    return materials
+    
+
+def get_node_from_color_mix_group(context, node_type):
+    
+    materials = get_context_materials(context)
+    nodes = []
+    
+    for mat in materials:
+        if not mat:
+            continue
+        
+        if not mat.node_tree:
+            continue
+            
+        for node in mat.node_tree.nodes:
+            
+            if not node.type == "GROUP":
+                continue
+        
+            if not mix_color_group in node.name:
+                continue
+            
+            if not node.node_tree:
+                continue
+            
+            for n in node.node_tree.nodes:
+                if n.type == node_type:
+                    nodes.append(n)
+    
+    return nodes     
+   
+                                 
 def reset_principled_node(node):
     
     node.inputs['Alpha'].default_value = 1
@@ -372,6 +448,7 @@ def generate_smart_preset_data():
                         print("Loading Smart Preset Data Error")         
                         
                 props.block_smart_material_setup_writing_data = False       
+   
                     
 def write_smart_mat_json(self,context):
         
@@ -432,6 +509,7 @@ def write_smart_mat_json(self,context):
     with open(smart_mat_s_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+
 def generate_preset_data():
         
     #print("Generating Preset Data")
@@ -463,6 +541,7 @@ def generate_preset_data():
                             new_prop.prop_value_vector3 = data["Presets"][i][prop]                  
                         else:
                             new_prop.prop_value = data["Presets"][i][prop]
+   
                         
 def write_preset_json(self,context):
     #print("Writing Preset Data")

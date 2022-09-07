@@ -159,7 +159,7 @@ class PT_OP_SmartMaterialSetup(bpy.types.Operator):
         if bpy.context.active_object:
             return True
         
-    rule_settings : bpy.props.BoolProperty()
+    rule_settings : bpy.props.BoolProperty() #type:ignore
     
     def smart_material_setup(self,context):
                 
@@ -383,7 +383,7 @@ class PT_OP_SmartMaterialSetup(bpy.types.Operator):
 
     def execute(self, context):
         
-        self.smart_material_setup()
+        self.smart_material_setup(context)
         
         self.report({'INFO'},"Finished")
         return {'FINISHED'}
@@ -400,9 +400,8 @@ class PT_OP_AddSmartMatSetupJSON(bpy.types.Operator):
     bl_label = "Update Data"
     bl_options = {'REGISTER', 'INTERNAL'}
     
-    rule_name : bpy.props.StringProperty(name='Smart Preset Name')
-    #name_string : bpy.props.StringProperty(name='Material String')
-    preset_to_activate : bpy.props.EnumProperty(name= "Preset", items=update_preset_enum_prop)
+    rule_name : bpy.props.StringProperty(name='Smart Preset Name') #type:ignore
+    preset_to_activate : bpy.props.EnumProperty(name= "Preset", items=update_preset_enum_prop) #type:ignore
     
     def invoke(self, context, event):
         
@@ -442,7 +441,7 @@ class PT_OP_RemoveSmartMatSetupJSON(bpy.types.Operator):
     bl_label = "Update Data"
     bl_options = {'REGISTER', 'INTERNAL'}
     
-    rule_name : bpy.props.StringProperty(name='Smart Preset Name')
+    rule_name : bpy.props.StringProperty(name='Smart Preset Name')  #type:ignore
         
     def execute(self, context):
         
@@ -475,7 +474,7 @@ class PT_OP_MoveSmartMatSetupJSON(bpy.types.Operator):
             ('UP','Up', ''),
             ('DOWN','Down', ''),
         ]        
-    )
+    )  #type:ignore
     
     def execute(self, context):
         
@@ -517,10 +516,10 @@ class PT_OP_ManagePropDetectSmartMatSetupJSON(bpy.types.Operator):
             ('UP','Up', ''),
             ('DOWN','Down', ''),
         ]        
-    )
+    )  #type:ignore
     
-    smart_preset_name : bpy.props.StringProperty()
-    add_preset : bpy.props.StringProperty()
+    smart_preset_name : bpy.props.StringProperty()  #type:ignore
+    add_preset : bpy.props.StringProperty()  #type:ignore
         
     def execute(self, context):
         
@@ -542,19 +541,19 @@ class PT_OP_ManagePropDetectSmartMatSetupJSON(bpy.types.Operator):
             
             # Check Duplicate
             
-            for p in smart_preset.prop_data_detect:
+            for p in smart_preset.prop_data_detect:  #type:ignore
                 if p.prop_name == self.add_preset:
                     
                     self.report({'WARNING'},"Property Already added")
                     return {'CANCELLED'}
             
-            new_prop_detect = smart_preset.prop_data_detect.add()
+            new_prop_detect = smart_preset.prop_data_detect.add()  #type:ignore
             new_prop_detect.prop_name = self.add_preset
             new_prop_detect.prop_value = 1
             new_prop_detect.prop_operation = "=="
         
         if self.action == 'REMOVE':         
-            smart_preset.prop_data_detect.remove(smart_preset_idx)
+            smart_preset.prop_data_detect.remove(smart_preset_idx)  #type:ignore
               
         write_smart_mat_json(self,context)
                       
@@ -573,7 +572,7 @@ class PT_OP_ManageIgnoredSMSMaterials(bpy.types.Operator):
         items = [
             ('REMOVE','Remove', ''),
         ]        
-    )
+    )  #type:ignore
     
     def execute(self, context):
           

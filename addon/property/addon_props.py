@@ -11,6 +11,16 @@ from ..utility.functions import write_smart_mat_json
 from .update_functions import *
 from .enum_functions import *
 
+def update_principled_props_closure(prop):
+    '''closure to get property that trigged the main update function'''
+        
+    return lambda a,b: update_props(a,b,prop)
+
+def update_base_color_settings_closure(prop):
+    '''closure to get property that trigged the main update function'''
+    
+    return lambda a,b: update_color_settings(a,b,prop)
+
 class PT_PresetPropData(PropertyGroup):
     '''Collection of "PT_PresetsCollection.preset_prop_data" that holds each prop of a preset'''
     
@@ -188,11 +198,11 @@ class PT_Addon_Props(PropertyGroup):
 
     enum_materials : bpy.props.EnumProperty(
         name= 'Material Data',
-        default = '0',
+        default = 'ALL_MATERIALS',
         update = update_enum_materials_node_count,
         items = [
-            ('0','All Materials', ''),
-            ('1','Active Only', ''),
+            ('ALL_MATERIALS','All Materials', ''),
+            ('ACTIVE_ONLY','Active Only', ''),
         ]        
     )
     
@@ -254,33 +264,30 @@ class PT_Addon_Props(PropertyGroup):
     use_b_hue : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_b_saturation : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_b_value : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
-    use_b_use_color_mix : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_b_color_mix_fac : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'})
 
     # HSV
     
-    b_hue: bpy.props.FloatProperty(default=0.5, min=0, max=1, name='HUE', update=update_base_color_settings_closure('HUE'))
-    b_saturation: bpy.props.FloatProperty(default=1, min=0, max=1, name='Saturation', update=update_base_color_settings_closure('SATURATION'))
-    b_value: bpy.props.FloatProperty(default=1, min=0, max=1, name='Value', update=update_base_color_settings_closure('VALUE'))
+    b_hue: bpy.props.FloatProperty(default=0.5, min=0, max=1, name='Hue', update=update_base_color_settings_closure('Hue'))
+    b_saturation: bpy.props.FloatProperty(default=1, min=0, max=1, name='Saturation', update=update_base_color_settings_closure('Saturation'))
+    b_value: bpy.props.FloatProperty(default=1, min=0, max=1, name='Value', update=update_base_color_settings_closure('Value'))
     
     # B/C
     
     use_b_bright: bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_b_contrast: bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'})
     
-    b_bright: bpy.props.FloatProperty(default=1, min=-100, max=100, name='Bright', update=update_base_color_settings_closure('BRIGHT'))
-    b_contrast: bpy.props.FloatProperty(default=1, min=-100, max=100, name='Contrast', update=update_base_color_settings_closure('CONTRAST'))
+    b_bright: bpy.props.FloatProperty(default=1, min=-100, max=100, name='Bright', update=update_base_color_settings_closure('Bright'))
+    b_contrast: bpy.props.FloatProperty(default=1, min=-100, max=100, name='Contrast', update=update_base_color_settings_closure('Contrast'))
     
     # GAMMA
     
     use_b_gamma: bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'})
-    
-    b_gamma: bpy.props.FloatProperty(default=1, min=0, max=10, name='Gamma', update=update_base_color_settings_closure('GAMMA'))
+    b_gamma: bpy.props.FloatProperty(default=1, min=0, max=10, name='Gamma', update=update_base_color_settings_closure('Gamma'))
     
     # Color Mix
 
-    b_use_color_mix: bpy.props.BoolProperty(default=False,name='Use Color Mix', update=update_base_color_settings_closure('USE MIX'))
-    b_color_mix_fac: bpy.props.FloatProperty(default=0.5, min=0, max=1, name='Mix Fac',update=update_base_color_settings_closure('MIX FAC'))
+    b_color_mix_fac: bpy.props.FloatProperty(default=0, min=0, max=1, name='Color Mix Fac',update=update_base_color_settings_closure('Color Mix Fac'))
     
     # Preset System
     
