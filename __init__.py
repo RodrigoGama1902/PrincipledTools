@@ -1,4 +1,3 @@
-import bpy
 
 bl_info = {
     "name": "Principled Tools",

@@ -1,8 +1,6 @@
 import bpy
 import json
 
-from .update_functions import *
-from ..utility.constants import *
 from ..utility.constants import *
 from ..utility.functions import (
                                  get_context_principled_nodes,

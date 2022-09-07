@@ -4,7 +4,7 @@ import json
 
 from ..addon_properties.addon_props import activate_selected_preset, update_main_props
 from ..utility.constants import *
-from ..utility.functions import (json_check,
+from ..utility.functions import (
                                 generate_preset_data,
                                 write_preset_json,
                                 )

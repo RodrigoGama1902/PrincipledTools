@@ -41,7 +41,7 @@ class PT_Addon_Props(PropertyGroup):
 
     # Principled Props Bool
 
-    use_base_color : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) # TODO Adicionar um update funtion pra não deixar mutado o mix node dos grupos de mixing
+    use_base_color : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'})
     use_subsurface : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_subsurface_ior : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_subsurface_anisotropy : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
