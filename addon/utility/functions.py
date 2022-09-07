@@ -143,6 +143,8 @@ def get_context_materials(context, auto_create_materials = False) -> list[Materi
     if props.enum_materials == 'ALL_MATERIALS':    
            
         for ob in context.selected_objects:
+            if not hasattr(ob.data, 'materials'):
+                continue
             if ob.data.materials:                    
                 for mat in ob.data.materials:
                     if mat:
@@ -160,15 +162,16 @@ def get_context_materials(context, auto_create_materials = False) -> list[Materi
           
         ob = context.active_object
         if ob:
-            mat = ob.active_material
-            if mat:
-                if not mat.use_nodes:
-                    active_use_nodes_in_material(mat)
-                materials.append(mat)              
-            else:
-                if auto_create_materials:
-                    materials.append(create_new_material(ob, "Material"))               
-                    props.principled_nodes_found += 1 
+            if hasattr(ob.data, 'materials'):
+                mat = ob.active_material
+                if mat:
+                    if not mat.use_nodes:
+                        active_use_nodes_in_material(mat)
+                    materials.append(mat)              
+                else:
+                    if auto_create_materials:
+                        materials.append(create_new_material(ob, "Material"))               
+                        props.principled_nodes_found += 1 
     
     return materials
 

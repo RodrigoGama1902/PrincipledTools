@@ -4,7 +4,7 @@ Principled Tools is an add-on that brigs a collection of tools that will help yo
 
 ## Who is it for?
 
-This Add-on was created for anyone that needs to perform a lot of adjust in multiple materials at the same time, with the power of principled and smart presets, you can quickly adjust all materials in your scene in one click
+This Add-on was created for anyone that needs to perform a lot of adjust in multiple materials at the same time, with the power of principled and smart presets, you can quickly adjust all materials in your scene in one click.
 
 ## Features:
 
