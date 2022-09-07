@@ -35,7 +35,7 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
                     prop_p = 'p_' + prop_name
                     prop_use = 'use_' + prop_name
                     
-                    if p.prop_name in vector3_prop:
+                    if p.prop_name in VECTOR3_PROP:
                         setattr(props,prop_p,p.prop_value_vector3)                  
                     else:
                         setattr(props,prop_p,p.prop_value)
@@ -51,7 +51,7 @@ def activate_selected_preset(self, context, preset_name, principled = None, load
                         if p:               
                             input = principled.inputs.get(p.prop_name)                            
                             if input:
-                                if p.prop_name in vector3_prop:
+                                if p.prop_name in VECTOR3_PROP:
                                     input.default_value = p.prop_value_vector3               
                                 else:
                                     input.default_value = p.prop_value
@@ -78,7 +78,7 @@ def base_color_helper(context, node_tree, input,value,principled):
     if has_base_color_link and not input.links:
         
         rgb_input = node_tree.nodes.new('ShaderNodeRGB')
-        rgb_input.name = rgb_node_name 
+        rgb_input.name = RGB_NODE_NAME 
         rgb_input.outputs[0].default_value = input.default_value
         rgb_input.location = (y_input_locations['Base Color'][0] - 150,y_input_locations['Base Color'][1])
         rgb_input.hide = True
@@ -91,14 +91,14 @@ def base_color_helper(context, node_tree, input,value,principled):
     if input.links: 
         # Checking if basecolor is connected to any node
         
-        if not input.links[0].from_node.name.startswith(mix_color_group):    
+        if not input.links[0].from_node.name.startswith(MIX_COLOR_GROUP_NAME):    
             # If connected to any node other than Mix Color Group, creates Mix Color Group
             
             new_mix_group = create_mixing_color_group()
             
             mix_group = node_tree.nodes.new('ShaderNodeGroup')
             mix_group.node_tree = bpy.data.node_groups[new_mix_group.name]
-            mix_group.name = mix_color_group
+            mix_group.name = MIX_COLOR_GROUP_NAME
             mix_group.location = y_input_locations['Base Color']
             mix_group.hide = True
             
@@ -164,10 +164,10 @@ def math_node_helper(node_tree, input,value,principled):
     
     if input.links: 
        
-        if not input.links[0].from_node.name.startswith(multiply_node_name):
+        if not input.links[0].from_node.name.startswith(MULTIPLY_NODE_NAME):
 
             math_node = node_tree.nodes.new(type='ShaderNodeMath')
-            math_node.name = multiply_node_name
+            math_node.name = MULTIPLY_NODE_NAME
             math_node.hide = True
             math_node.operation = 'MULTIPLY'
             math_node.use_clamp = True
@@ -266,10 +266,10 @@ def update_normal_principled_input(self, input, origin, node_tree, principled):
             if from_socket_node.type == 'BUMP' or from_socket_node.type == 'NORMAL_MAP':
                 
                 if from_socket_node.inputs[0].links:
-                    if not from_socket_node.inputs[0].links[0].from_node.name.startswith(multiply_node_name):
+                    if not from_socket_node.inputs[0].links[0].from_node.name.startswith(MULTIPLY_NODE_NAME):
 
                         math_node = node_tree.nodes.new(type='ShaderNodeMath')
-                        math_node.name = multiply_node_name
+                        math_node.name = MULTIPLY_NODE_NAME
                         math_node.hide = True
                         math_node.operation = 'MULTIPLY'
 
@@ -542,7 +542,7 @@ def write_update_smart_mat_json(self, context):
                    
             }
                         
-    with open(smart_mat_s_path, 'w', encoding='utf-8') as f:
+    with open(SMART_MATERIAL_PRESETS_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
  

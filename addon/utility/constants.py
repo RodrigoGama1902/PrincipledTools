@@ -2,28 +2,28 @@ import bpy
 import pathlib
 import os
 
-addon_name = __name__.partition('.')[0]
+ADDON_NAME = __name__.partition('.')[0]
 
-command_file_name = 'principled_presets.json'
-favorites_path = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), command_file_name)
+COMMAND_FILE_NAME = 'principled_presets.json'
+FAVORITES_PATH = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), COMMAND_FILE_NAME)
 
-smart_mat_s_name = 'principled_smartmat_presets.json'
-smart_mat_s_path = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), smart_mat_s_name)
+SMART_MATERIAL_PRESETS_FILENAME = 'principled_smartmat_presets.json'
+SMART_MATERIAL_PRESETS_PATH = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), SMART_MATERIAL_PRESETS_FILENAME)
 
-smart_mat_s_name_test = 'principled_smart_mat_presets_test.json'
-smart_mat_s_path_test = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), smart_mat_s_name_test)
+SMART_MATERIAL_PRESETS_TEST_FILENAME = 'principled_smart_mat_presets_test.json'
+SMART_MATERIAL_PRESETS_TEST_PATH = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), SMART_MATERIAL_PRESETS_TEST_FILENAME)
 
-node_identifier = '_PRINCIPLEDTOOLSNODE'
+ADDON_NODE_IDENTIFIER = '_PRINCIPLEDTOOLSNODE'
 
-rgb_node_name = 'RGB' + node_identifier
-multiply_node_name = 'MULTIPLY' + node_identifier
-mix_node_name = 'MIX' + node_identifier
-hue_node_name = 'HUE' + node_identifier
-bc_node_name = 'BC' + node_identifier
-gamma_node_name = 'GAMMA' + node_identifier
-mix_color_group = 'MIXING_GROUP' + node_identifier
+RGB_NODE_NAME = 'RGB' + ADDON_NODE_IDENTIFIER
+MULTIPLY_NODE_NAME = 'MULTIPLY' + ADDON_NODE_IDENTIFIER
+MIX_NODE_NAME = 'MIX' + ADDON_NODE_IDENTIFIER
+HUE_NODE_NAME = 'HUE' + ADDON_NODE_IDENTIFIER
+BC_NODE_NAME = 'BC' + ADDON_NODE_IDENTIFIER
+GAMMA_NODE_NAME = 'GAMMA' + ADDON_NODE_IDENTIFIER
+MIX_COLOR_GROUP_NAME = 'MIXING_GROUP' + ADDON_NODE_IDENTIFIER
 
-principled_props_default = {
+PRINCIPLED_PROPS_DEFAULT = {
     'Base Color': (0.800000011920929,0.800000011920929,0.800000011920929,1),
     'Alpha' : 1,
     'Anisotropic' : 0,
@@ -43,6 +43,6 @@ principled_props_default = {
     'Transmission Roughness' : 0,    
 }
 
-vector3_prop = ["Base Color", "Emission"]
+VECTOR3_PROP = ["Base Color", "Emission"]
 
 

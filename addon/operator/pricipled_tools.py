@@ -404,7 +404,7 @@ class PT_OP_RemoveHelperNodes(bpy.types.Operator):
         for nt in node_trees:   
             nt_nodes = get_all_nodes(nt)      
             for n in nt_nodes:
-                if node_identifier in n.name:
+                if ADDON_NODE_IDENTIFIER in n.name:
                     self.remove_and_relink(n)
             
         return {'FINISHED'}          

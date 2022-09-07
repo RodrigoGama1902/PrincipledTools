@@ -12,12 +12,12 @@ from bpy.types import (Operator,
                        PropertyGroup,
                        UIList)
 
-from ..utility.constants import addon_name
+from ..utility.constants import ADDON_NAME
 from ..utility.functions import get_prefs
 
 
 class PT_AddonPrefs(bpy.types.AddonPreferences):    
-    bl_idname = addon_name
+    bl_idname = ADDON_NAME
 
     ###### Preferences
     

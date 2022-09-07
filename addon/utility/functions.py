@@ -7,7 +7,7 @@ from .constants import *
 from bpy.types import Object, Material, Node, NodeGroup
 
 def get_prefs():
-    return bpy.context.preferences.addons[addon_name].preferences         
+    return bpy.context.preferences.addons[ADDON_NAME].preferences         
 
 def convert_ab_path(filepath : str) -> str:
     '''Converts a relative path to an absolute path'''
@@ -208,7 +208,7 @@ def get_all_nodes(node_tree) -> list[Node]:
 def create_mixing_color_group() -> NodeGroup:
     '''Creates a node group for mixing colors'''
         
-    group_tree = bpy.data.node_groups.new(mix_color_group, 'ShaderNodeTree')
+    group_tree = bpy.data.node_groups.new(MIX_COLOR_GROUP_NAME, 'ShaderNodeTree')
     
     group_in = group_tree.nodes.new('NodeGroupInput')
 
@@ -220,27 +220,27 @@ def create_mixing_color_group() -> NodeGroup:
     # Mix Node
     
     mix_node = group_tree.nodes.new(type='ShaderNodeMixRGB')
-    mix_node.name = mix_node_name
+    mix_node.name = MIX_NODE_NAME
     mix_node.hide = True
     mix_node.inputs[0].default_value = 0.5
  
     # Hue Node
 
     hue_node = group_tree.nodes.new(type='ShaderNodeHueSaturation')
-    hue_node.name = hue_node_name
+    hue_node.name = HUE_NODE_NAME
     hue_node.hide = True
     hue_node.inputs[0].default_value = 0.5
     
     # B/C Node
     
     bc_node = group_tree.nodes.new(type='ShaderNodeBrightContrast')
-    bc_node.name = bc_node_name
+    bc_node.name = BC_NODE_NAME
     bc_node.hide = True
     
     # Gamma
     
     gamma_node = group_tree.nodes.new(type='ShaderNodeGamma')
-    gamma_node.name = gamma_node_name
+    gamma_node.name = GAMMA_NODE_NAME
     gamma_node.hide = True
 
     # Locations
@@ -313,10 +313,10 @@ def generate_smart_preset_data(context) -> None:
                   
     props = context.scene.principledtools
     
-    if not (os.path.exists(smart_mat_s_path) and json_check(smart_mat_s_path)):
+    if not (os.path.exists(SMART_MATERIAL_PRESETS_PATH) and json_check(SMART_MATERIAL_PRESETS_PATH)):
         return None 
         
-    with open(smart_mat_s_path, encoding='utf8') as json_file:
+    with open(SMART_MATERIAL_PRESETS_PATH, encoding='utf8') as json_file:
         
         data = json.load(json_file)  
         if not data["Smart Presets"]:
@@ -387,9 +387,9 @@ def generate_preset_data():
     
     props = bpy.context.scene.principledtools
     
-    if os.path.exists(favorites_path) and json_check(favorites_path): 
+    if os.path.exists(FAVORITES_PATH) and json_check(FAVORITES_PATH): 
         
-        with open(favorites_path, encoding='utf8') as json_file:
+        with open(FAVORITES_PATH, encoding='utf8') as json_file:
             
             data = json.load(json_file)  
             if not data["Presets"]:
@@ -408,7 +408,7 @@ def generate_preset_data():
                         new_prop = new_preset.preset_prop_data.add()
                         new_prop.prop_name = prop
                         
-                        if prop in vector3_prop:
+                        if prop in VECTOR3_PROP:
                             new_prop.prop_value_vector3 = data["Presets"][i][prop]                  
                         else:
                             new_prop.prop_value = data["Presets"][i][prop]
@@ -427,14 +427,14 @@ def write_preset_json(context):
         prop_data = {}
         
         for p in i.preset_prop_data:
-            if p.prop_name in vector3_prop:
+            if p.prop_name in VECTOR3_PROP:
                 prop_data[p.prop_name] = [p.prop_value_vector3[0],p.prop_value_vector3[1],p.prop_value_vector3[2],p.prop_value_vector3[3]]                
             else:
                 prop_data[p.prop_name] = p.prop_value
               
         data["Presets"][i.preset_name] = prop_data
                     
-    with open(favorites_path, 'w', encoding='utf-8') as f:
+    with open(FAVORITES_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 

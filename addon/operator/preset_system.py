@@ -140,10 +140,10 @@ class PT_AddPPreset(bpy.types.Operator): # change material props from mp
                     if prop_name in ignore_prop:
                         continue
                                                 
-                    if (round(getattr(props,i),2) if not prop_name in vector3_prop else getattr(props,i)) == principled_props_default[prop_name]:
+                    if (round(getattr(props,i),2) if not prop_name in VECTOR3_PROP else getattr(props,i)) == PRINCIPLED_PROPS_DEFAULT[prop_name]:
                         continue
                     
-                    prop_data[prop_name] = round(getattr(props,i),2) if not prop_name in vector3_prop else getattr(props,i)
+                    prop_data[prop_name] = round(getattr(props,i),2) if not prop_name in VECTOR3_PROP else getattr(props,i)
         
         if prop_data:
                 
