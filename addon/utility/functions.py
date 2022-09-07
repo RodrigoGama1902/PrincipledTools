@@ -381,40 +381,38 @@ def generate_smart_preset_data(context) -> None:
         props.block_smart_material_setup_writing_data = False       
    
                 
-def generate_preset_data():
+def generate_preset_data(context) -> None:
         
-    #print("Generating Preset Data")
+    props = context.scene.principledtools
     
-    props = bpy.context.scene.principledtools
-    
-    if os.path.exists(FAVORITES_PATH) and json_check(FAVORITES_PATH): 
+    if not os.path.exists(FAVORITES_PATH) and json_check(FAVORITES_PATH): 
+        return None
         
-        with open(FAVORITES_PATH, encoding='utf8') as json_file:
-            
-            data = json.load(json_file)  
-            if not data["Presets"]:
-                empty_favorites = True
-            else:
-                
-                props.loaded_presets.clear()
-                
-                for i in data["Presets"]: 
+    with open(FAVORITES_PATH, encoding='utf8') as json_file:
+        
+        data = json.load(json_file)  
+        if not data["Presets"]:
+            return None
+ 
+        props.loaded_presets.clear()
+        
+        for i in data["Presets"]: 
 
-                    new_preset = props.loaded_presets.add()
-                    new_preset.preset_name = i
-                    
-                    for prop in data["Presets"][i]:
-                             
-                        new_prop = new_preset.preset_prop_data.add()
-                        new_prop.prop_name = prop
+            new_preset = props.loaded_presets.add()
+            new_preset.preset_name = i
+            
+            for prop in data["Presets"][i]:
                         
-                        if prop in VECTOR3_PROP:
-                            new_prop.prop_value_vector3 = data["Presets"][i][prop]                  
-                        else:
-                            new_prop.prop_value = data["Presets"][i][prop]
+                new_prop = new_preset.preset_prop_data.add()
+                new_prop.prop_name = prop
+                
+                if prop in VECTOR3_PROP:
+                    new_prop.prop_value_vector3 = data["Presets"][i][prop]                  
+                else:
+                    new_prop.prop_value = data["Presets"][i][prop]
    
                         
-def write_preset_json(context):
+def write_preset_json(context) -> None:
     '''Write a new preset json'''
 
     props = context.scene.principledtools
