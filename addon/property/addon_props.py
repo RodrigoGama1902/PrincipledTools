@@ -92,6 +92,9 @@ def base_color_helper(node_tree, input,value,principled):
         'Base Color': (default_x_offset, principled.location[1] - 105),     
     }
     
+    # TODO adicionar verificação se os principled selecionados tem input de base color
+    # Se tiver, e esse aqui não, criar um input RGB node, pra poder sofrer os ajustes de HSV corretamente
+    
     mix_group = None
     
     if input.links: 
@@ -448,6 +451,9 @@ def update_color_settings(self, context, origin=""):
         return
         
     if props.auto_update or origin == 'All':
+        
+        # TODO Remove "If not nodes_groups_helpers", se não em caso que não existe apenas um, ele ignora
+        
         if not nodes_groups_helpers:
             
             # Create color helper group node
@@ -727,7 +733,7 @@ class PT_Addon_Props(PropertyGroup):
 
     # Principled Props Bool
 
-    use_base_color : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
+    use_base_color : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) # TODO Adicionar um update funtion pra não deixar mutado o mix node dos grupos de mixing
     use_subsurface : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_subsurface_ior : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
     use_subsurface_anisotropy : bpy.props.BoolProperty(default = False , options = {'SKIP_SAVE'}) 
