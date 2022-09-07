@@ -197,7 +197,6 @@ class PT_MainPrincipledTool(bpy.types.Operator): # change material props from mp
     def execute(self, context):
 
         update_main_props(self,context,'All')
-
         return {'FINISHED'}
 
     def invoke(self, context, event):
