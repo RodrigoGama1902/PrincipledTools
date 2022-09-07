@@ -2,7 +2,7 @@ import bpy
 
 bl_info = {
     "name": "Principled Tools",
-    "description": "Quick Ajusts for Principled Shader",
+    "description": "A collection of tools that will help you speed up your Principled Shader pipeline",
     "author": "Rodrigo Gama",
     "version": (0, 5, 0),
     "blender": (3, 3, 0),
