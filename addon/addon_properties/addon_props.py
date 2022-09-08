@@ -30,7 +30,7 @@ class PT_Addon_Props(PropertyGroup):
         update = update_enum_materials_node_count,
         items = [
             ('ALL_MATERIALS','All Materials', ''),
-            ('ACTIVE_ONLY','Active Only', ''),
+            ('ACTIVE_MATERIAL','Active Only', ''),
         ]        
     )
     

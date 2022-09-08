@@ -161,6 +161,7 @@ def get_context_materials(context, auto_create_materials = False) -> list[Materi
     if props.enum_materials == 'ACTIVE_MATERIAL':      
           
         ob = context.active_object
+            
         if ob:
             if hasattr(ob.data, 'materials'):
                 mat = ob.active_material
